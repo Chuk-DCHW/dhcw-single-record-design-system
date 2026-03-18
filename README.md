@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DHCW Single Record Design System
 
 A design system for the Single Record programme within a DHCW directorate (NHS Wales).
@@ -57,3 +58,4 @@ CONTRIBUTING.md    — How to contribute to this system
 Design lead: [your name]
 Repository: `dhcw-single-record-design-system`
 Programme: Single Record, DHCW
+=======
