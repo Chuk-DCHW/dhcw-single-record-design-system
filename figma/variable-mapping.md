@@ -10,58 +10,124 @@ This file must be kept in sync whenever tokens are added, renamed, or removed.
 
 | Layer | Format | Example |
 |---|---|---|
-| Figma variable | `Group/Subgroup/Name` | `Color/Interactive/Primary` |
-| Design token | `{tier}.{category}.{name}` | `color.interactive.primary` |
-| CSS custom property | `--{tier}-{category}-{name}` | `--color-interactive-primary` |
-| MAUI resource | `PascalCase` | `ColorInteractivePrimary` |
+| Figma variable (primitives) | `Primitives/Group/Scale` | `Primitives/Blue/800` |
+| Figma variable (semantic) | `DHCW/Category/Name` | `DHCW/Interactive/Primary` |
+| Design token (primitives) | `color.{hue}.{scale}` | `color.blue.800` |
+| Design token (semantic) | `dhcw.color.{category}.{name}` | `dhcw.color.interactive.primary` |
+| CSS custom property | `--dhcw-color-{category}-{name}` | `--dhcw-color-interactive-primary` |
+| MAUI resource | `DhcwColor{Category}{Name}` | `DhcwColorInteractivePrimary` |
 
 ---
 
-## Colour Variables
+## Primitive Colour Variables
+
+Source: `/foundations/tokens/primitives/color.json`
+
+### Blue (NHS Wales Blue)
+| Figma Variable | Token | Hex |
+|---|---|---|
+| `Primitives/Blue/900` | `color.blue.900` | `#1E3050` |
+| `Primitives/Blue/800` | `color.blue.800` | `#325083` |
+| `Primitives/Blue/700` | `color.blue.700` | `#3D6199` |
+| `Primitives/Blue/600` | `color.blue.600` | `#4C72AE` |
+| `Primitives/Blue/500` | `color.blue.500` | `#5C6991` |
+| `Primitives/Blue/400` | `color.blue.400` | `#828DAC` |
+| `Primitives/Blue/300` | `color.blue.300` | `#AAB1C6` |
+| `Primitives/Blue/200` | `color.blue.200` | `#D4D8E2` |
+| `Primitives/Blue/100` | `color.blue.100` | `#ECEEF3` |
+| `Primitives/Blue/50`  | `color.blue.50`  | `#F4F5F8` |
+
+### Cyan (DHCW Blue)
+| Figma Variable | Token | Hex |
+|---|---|---|
+| `Primitives/Cyan/900` | `color.cyan.900` | `#0A6A84` |
+| `Primitives/Cyan/800` | `color.cyan.800` | `#0D8BAD` |
+| `Primitives/Cyan/700` | `color.cyan.700` | `#12A3C9` |
+| `Primitives/Cyan/600` | `color.cyan.600` | `#71ACCD` |
+| `Primitives/Cyan/500` | `color.cyan.500` | `#8DC0DA` |
+| `Primitives/Cyan/400` | `color.cyan.400` | `#AFD4E5` |
+| `Primitives/Cyan/300` | `color.cyan.300` | `#D6EAF2` |
+| `Primitives/Cyan/100` | `color.cyan.100` | `#EBF5FA` |
+| `Primitives/Cyan/50`  | `color.cyan.50`  | `#F4FAFC` |
+
+### Navy (DHCW Navy)
+| Figma Variable | Token | Hex |
+|---|---|---|
+| `Primitives/Navy/900` | `color.navy.900` | `#1B294A` |
+| `Primitives/Navy/700` | `color.navy.700` | `#464C64` |
+| `Primitives/Navy/500` | `color.navy.500` | `#707488` |
+| `Primitives/Navy/300` | `color.navy.300` | `#9EA1AF` |
+| `Primitives/Navy/100` | `color.navy.100` | `#CDCFD6` |
+
+### Status & Utility
+| Figma Variable | Token | Hex |
+|---|---|---|
+| `Primitives/Red/600` | `color.red.600` | `#D5281B` |
+| `Primitives/Red/100` | `color.red.100` | `#FCDBD9` |
+| `Primitives/Green/600` | `color.green.600` | `#007F3B` |
+| `Primitives/Green/100` | `color.green.100` | `#D9EFE5` |
+| `Primitives/Yellow/500` | `color.yellow.500` | `#F8CA4D` |
+| `Primitives/Yellow/100` | `color.yellow.100` | `#FDF6DC` |
+| `Primitives/Info Blue` | `color.info-blue` | `#005AA8` |
+| `Primitives/Info Blue/100` | `color.info-blue.100` | `#D6E8F5` |
+| `Primitives/Focus Yellow` | `color.focus-yellow` | `#FFEB3B` |
+| `Primitives/Grey/900` | `color.grey.900` | `#212B32` |
+| `Primitives/Grey/600` | `color.grey.600` | `#4C6272` |
+| `Primitives/Grey/200` | `color.grey.200` | `#D8DDE0` |
+| `Primitives/Grey/100` | `color.grey.100` | `#F0F4F5` |
+| `Primitives/White` | `color.white` | `#FFFFFF` |
+
+---
+
+## Semantic Colour Variables
+
+Source: `/foundations/tokens/semantic/color.json`
+
+All semantic variables alias primitives — no raw hex values.
 
 ### Interactive
-| Figma Variable | Token | CSS Custom Property |
+| Figma Variable | Token | Aliases |
 |---|---|---|
-| `Color/Interactive/Primary` | `color.interactive.primary` | `--color-interactive-primary` |
-| `Color/Interactive/Primary Hover` | `color.interactive.primary-hover` | `--color-interactive-primary-hover` |
-| `Color/Interactive/Focus` | `color.interactive.focus` | `--color-interactive-focus` |
-| `Color/Interactive/Focus Inner` | `color.interactive.focus-inner` | `--color-interactive-focus-inner` |
-| `Color/Interactive/Disabled` | `color.interactive.disabled` | `--color-interactive-disabled` |
-| `Color/Interactive/Disabled Text` | `color.interactive.disabled-text` | `--color-interactive-disabled-text` |
+| `DHCW/Interactive/Primary` | `dhcw.color.interactive.primary` | `color.blue.800` |
+| `DHCW/Interactive/Primary Hover` | `dhcw.color.interactive.primary-hover` | `color.blue.900` |
+| `DHCW/Interactive/Secondary` | `dhcw.color.interactive.secondary` | `color.navy.900` |
+| `DHCW/Interactive/Link` | `dhcw.color.interactive.link` | `color.info-blue` |
+| `DHCW/Interactive/Destructive` | `dhcw.color.interactive.destructive` | `color.red.600` |
+
+### Surface
+| Figma Variable | Token | Aliases |
+|---|---|---|
+| `DHCW/Surface/Default` | `dhcw.color.surface.default` | `color.grey.100` |
+| `DHCW/Surface/Card` | `dhcw.color.surface.card` | `color.white` |
+| `DHCW/Surface/Accent` | `dhcw.color.surface.accent` | `color.cyan.100` |
+| `DHCW/Surface/Subtle` | `dhcw.color.surface.subtle` | `color.blue.50` |
+| `DHCW/Surface/Header` | `dhcw.color.surface.header` | `color.navy.900` |
 
 ### Text
-| Figma Variable | Token | CSS Custom Property |
+| Figma Variable | Token | Aliases |
 |---|---|---|
-| `Color/Text/Primary` | `color.text.primary` | `--color-text-primary` |
-| `Color/Text/Secondary` | `color.text.secondary` | `--color-text-secondary` |
-| `Color/Text/Error` | `color.text.error` | `--color-text-error` |
-| `Color/Text/Inverse` | `color.text.inverse` | `--color-text-inverse` |
-| `Color/Text/Link` | `color.text.link` | `--color-text-link` |
+| `DHCW/Text/Primary` | `dhcw.color.text.primary` | `color.grey.900` |
+| `DHCW/Text/Secondary` | `dhcw.color.text.secondary` | `color.grey.600` |
+| `DHCW/Text/Inverse` | `dhcw.color.text.inverse` | `color.white` |
 
-### Background
-| Figma Variable | Token | CSS Custom Property |
+### Border
+| Figma Variable | Token | Aliases |
 |---|---|---|
-| `Color/Background/Page` | `color.background.page` | `--color-background-page` |
-| `Color/Background/Surface` | `color.background.surface` | `--color-background-surface` |
-| `Color/Background/Subtle` | `color.background.subtle` | `--color-background-subtle` |
+| `DHCW/Border/Default` | `dhcw.color.border.default` | `color.grey.200` |
+| `DHCW/Border/Strong` | `dhcw.color.border.strong` | `color.grey.600` |
+| `DHCW/Border/Focus` | `dhcw.color.border.focus` | `color.focus-yellow` |
 
 ### Status
-| Figma Variable | Token | CSS Custom Property |
+| Figma Variable | Token | Aliases |
 |---|---|---|
-| `Color/Status/Success` | `color.status.success` | `--color-status-success` |
-| `Color/Status/Success BG` | `color.status.success-bg` | `--color-status-success-bg` |
-| `Color/Status/Warning` | `color.status.warning` | `--color-status-warning` |
-| `Color/Status/Warning BG` | `color.status.warning-bg` | `--color-status-warning-bg` |
-| `Color/Status/Error` | `color.status.error` | `--color-status-error` |
-| `Color/Status/Error BG` | `color.status.error-bg` | `--color-status-error-bg` |
-| `Color/Status/Info` | `color.status.info` | `--color-status-info` |
-| `Color/Status/Info BG` | `color.status.info-bg` | `--color-status-info-bg` |
-
-### Brand
-| Figma Variable | Token | CSS Custom Property |
-|---|---|---|
-| `Color/Brand/Primary` | `color.brand.primary` | `--color-brand-primary` |
-| `Color/Brand/Primary Dark` | `color.brand.primary-dark` | `--color-brand-primary-dark` |
+| `DHCW/Status/Critical` | `dhcw.color.status.critical` | `color.red.600` |
+| `DHCW/Status/Critical Surface` | `dhcw.color.status.critical-surface` | `color.red.100` |
+| `DHCW/Status/Success` | `dhcw.color.status.success` | `color.green.600` |
+| `DHCW/Status/Success Surface` | `dhcw.color.status.success-surface` | `color.green.100` |
+| `DHCW/Status/Warning` | `dhcw.color.status.warning` | `color.yellow.500` |
+| `DHCW/Status/Warning Surface` | `dhcw.color.status.warning-surface` | `color.yellow.100` |
+| `DHCW/Status/Info` | `dhcw.color.status.info` | `color.info-blue` |
+| `DHCW/Status/Info Surface` | `dhcw.color.status.info-surface` | `color.info-blue.100` |
 
 ---
 
@@ -95,5 +161,6 @@ This file must be kept in sync whenever tokens are added, renamed, or removed.
 ## Maintenance
 
 - When adding a new Figma variable, add a corresponding row to this file in the same commit.
-- When renaming, update all three columns simultaneously.
+- When renaming, update all columns simultaneously.
 - Breaking changes (token renames that affect code) require a DDR before implementation.
+- JSON sources are the machine-readable single source of truth. This file is the human-readable reference.
