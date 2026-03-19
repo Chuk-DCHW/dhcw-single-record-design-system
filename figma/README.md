@@ -11,6 +11,7 @@ This directory manages the relationship between Figma design assets and the desi
 | `variable-mapping.md` | Maps Figma variables to design token names |
 | `handoff-conventions.md` | Rules for preparing designs for engineering handoff |
 | `scripts/push-variables.js` | Pushes colour tokens to Figma via the Variables REST API |
+| `plugins/colour-palette/` | One-run Figma plugin to generate the colour palette page (interim — see below) |
 
 ---
 
@@ -71,6 +72,37 @@ The script is CREATE-only. To re-run after changes:
 - Does not push spacing, typography, or elevation tokens (added later when those JSON files exist)
 - Does not create component-level (Tier 3) tokens
 - Does not modify existing variables — only creates new ones
+
+---
+
+## Ways of Working — Figma Tooling
+
+There are three distinct ways this system interacts with Figma. Each has a specific role. Use the right tool for the job.
+
+| Task | Tool | Reason |
+|---|---|---|
+| Push design tokens (variables) | **REST API** via `scripts/push-variables.js` + GitHub Actions | Variables API is the only REST endpoint that supports writes |
+| Read design content (specs, layouts, screenshots) | **Figma MCP** (`get_design_context`, `get_metadata`, `get_screenshot`) | MCP provides structured output optimised for code generation |
+| Write design content (frames, components, layouts) | **Figma MCP** | MCP writes design content directly into Figma files without requiring a plugin |
+| One-off generation (interim, pre-MCP write) | **Figma plugin** (e.g. `plugins/colour-palette/`) | Used only where MCP write capability has not yet been verified for the specific task |
+
+### Current status
+
+| Capability | Approach | Status |
+|---|---|---|
+| Push colour variables | REST API → GitHub Actions | Live |
+| Read design content | Figma MCP | Live |
+| Write design content | Figma MCP | **Pending test** — see below |
+| Colour palette page | Figma plugin (interim) | Awaiting MCP write confirmation |
+
+### When MCP write is confirmed
+
+Once the MCP write capability for design content is confirmed working:
+
+1. **Retire the plugin** at `figma/plugins/colour-palette/` — replace with an MCP-based generation call
+2. **Update this table** to mark MCP write as Live
+3. **Document the MCP call pattern** used so it can be replicated for other generated pages (typography, spacing, etc.)
+4. Any future generated design pages (component documentation, token showcases) should use MCP by default, not plugins
 
 ---
 
