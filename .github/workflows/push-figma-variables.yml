@@ -1,0 +1,29 @@
+name: Push colour tokens to Figma
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "push" to confirm you want to overwrite Figma variables'
+        required: true
+
+jobs:
+  push-variables:
+    name: Push variables
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Push colour tokens to Figma
+        env:
+          FIGMA_TOKEN: ${{ secrets.FIGMA_TOKEN }}
+          FIGMA_FILE_KEY: ${{ secrets.FIGMA_FILE_KEY }}
+        run: node figma/scripts/push-variables.js
