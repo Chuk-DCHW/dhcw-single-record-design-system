@@ -4,7 +4,7 @@ Semantic tokens assign **meaning** to primitive colour values. Components and pa
 
 Machine-readable source of truth: `/foundations/tokens/semantic/color.json` (W3C Design Token format).
 
-All semantic tokens use the `dhcw` prefix (provisional — easy to rename).
+All semantic tokens use the `sr` prefix (Single Record).
 
 Defined in Figma as **semantic colour variables**, aliased to primitive variables.
 
@@ -14,11 +14,11 @@ Defined in Figma as **semantic colour variables**, aliased to primitive variable
 
 | Token | Maps to | Usage |
 |---|---|---|
-| `dhcw.color.interactive.primary` | `blue.800` | Primary buttons, active nav |
-| `dhcw.color.interactive.primary-hover` | `blue.900` | Hover state for primary |
-| `dhcw.color.interactive.secondary` | `navy.900` | Secondary interactive elements |
-| `dhcw.color.interactive.link` | `info-blue` | Inline links |
-| `dhcw.color.interactive.destructive` | `red.600` | Destructive actions |
+| `sr.color.interactive.primary` | `blue.800` | Primary buttons, active nav |
+| `sr.color.interactive.primary-hover` | `blue.900` | Hover state for primary |
+| `sr.color.interactive.secondary` | `navy.900` | Secondary interactive elements |
+| `sr.color.interactive.link` | `info-blue` | Inline links |
+| `sr.color.interactive.destructive` | `red.600` | Destructive actions |
 
 ---
 
@@ -26,11 +26,11 @@ Defined in Figma as **semantic colour variables**, aliased to primitive variable
 
 | Token | Maps to | Usage |
 |---|---|---|
-| `dhcw.color.surface.default` | `grey.100` | Default page background |
-| `dhcw.color.surface.card` | `white` | Cards, panels, modals |
-| `dhcw.color.surface.accent` | `cyan.100` | Accent/highlight backgrounds |
-| `dhcw.color.surface.subtle` | `blue.50` | Subtle section backgrounds |
-| `dhcw.color.surface.header` | `navy.900` | Header bars, navigation |
+| `sr.color.surface.default` | `grey.100` | Default page background |
+| `sr.color.surface.card` | `white` | Cards, panels, modals |
+| `sr.color.surface.accent` | `cyan.100` | Accent/highlight backgrounds |
+| `sr.color.surface.subtle` | `blue.50` | Subtle section backgrounds |
+| `sr.color.surface.header` | `navy.900` | Header bars, navigation |
 
 ---
 
@@ -38,9 +38,9 @@ Defined in Figma as **semantic colour variables**, aliased to primitive variable
 
 | Token | Maps to | Usage |
 |---|---|---|
-| `dhcw.color.text.primary` | `grey.900` | Body text, headings |
-| `dhcw.color.text.secondary` | `grey.600` | Supporting text, captions |
-| `dhcw.color.text.inverse` | `white` | Text on dark backgrounds |
+| `sr.color.text.primary` | `grey.900` | Body text, headings |
+| `sr.color.text.secondary` | `grey.600` | Supporting text, captions |
+| `sr.color.text.inverse` | `white` | Text on dark backgrounds |
 
 ---
 
@@ -48,9 +48,9 @@ Defined in Figma as **semantic colour variables**, aliased to primitive variable
 
 | Token | Maps to | Usage |
 |---|---|---|
-| `dhcw.color.border.default` | `grey.200` | Default borders |
-| `dhcw.color.border.strong` | `grey.600` | Dividers, section edges |
-| `dhcw.color.border.focus` | `focus-yellow` | Focus ring — all interactive elements |
+| `sr.color.border.default` | `grey.200` | Default borders |
+| `sr.color.border.strong` | `grey.600` | Dividers, section edges |
+| `sr.color.border.focus` | `focus-yellow` | Focus ring — all interactive elements |
 
 ---
 
@@ -60,14 +60,14 @@ Used in banners, badges, row highlights, and clinical alert states.
 
 | Token | Maps to | Meaning |
 |---|---|---|
-| `dhcw.color.status.critical` | `red.600` | Failed, invalid, critical |
-| `dhcw.color.status.critical-surface` | `red.100` | Critical background |
-| `dhcw.color.status.success` | `green.600` | Completed, confirmed |
-| `dhcw.color.status.success-surface` | `green.100` | Success background |
-| `dhcw.color.status.warning` | `yellow.500` | Requires attention |
-| `dhcw.color.status.warning-surface` | `yellow.100` | Warning background |
-| `dhcw.color.status.info` | `info-blue` | Informational |
-| `dhcw.color.status.info-surface` | `info-blue.100` | Info background |
+| `sr.color.status.critical` | `red.600` | Failed, invalid, critical |
+| `sr.color.status.critical-surface` | `red.100` | Critical background |
+| `sr.color.status.success` | `green.600` | Completed, confirmed |
+| `sr.color.status.success-surface` | `green.100` | Success background |
+| `sr.color.status.warning` | `yellow.500` | Requires attention |
+| `sr.color.status.warning-surface` | `yellow.100` | Warning background |
+| `sr.color.status.info` | `info-blue` | Informational |
+| `sr.color.status.info-surface` | `info-blue.100` | Info background |
 
 **Clinical alert note:** Do not rely on colour alone to communicate clinical status. Always pair with an icon and text label. See `/accessibility/colour-and-contrast.md`.
 

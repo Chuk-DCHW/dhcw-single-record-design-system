@@ -1,7 +1,7 @@
 {
   "$schema": "https://design-tokens.github.io/community-group/format/",
-  "$description": "DHCW Single Record Design System — Semantic colour tokens (Tier 2). All values reference primitive tokens. Prefix: dhcw (provisional).",
-  "dhcw": {
+  "$description": "DHCW Single Record Design System — Semantic colour tokens (Tier 2). All values reference primitive tokens. Prefix: sr (Single Record).",
+  "sr": {
     "color": {
       "interactive": {
         "primary":       { "$type": "color", "$value": "{color.blue.800}" },

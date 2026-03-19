@@ -6,7 +6,7 @@
  *
  * Creates two collections in the target Figma file:
  *   - "Primitives"  raw palette values (hidden from publishing)
- *   - "DHCW"        semantic aliases referencing Primitives
+ *   - "Single Record"  semantic aliases referencing Primitives
  *
  * Prerequisites:
  *   Node.js 18+ (uses native fetch — no install needed)
@@ -22,9 +22,9 @@
  *
  * Notes:
  *   - This script is additive (CREATE only). Run it once on a fresh Figma file,
- *     or delete existing Primitives / DHCW collections before re-running.
+ *     or delete existing Primitives / Single Record collections before re-running.
  *   - Primitive variables are marked hiddenFromPublishing so they don't
- *     appear in the public library — only DHCW semantic tokens are exposed.
+ *     appear in the public library — only Single Record semantic tokens are exposed.
  */
 
 'use strict';
@@ -106,11 +106,11 @@ function primitivePathToFigmaName(tokenPath) {
 
 /**
  * Convert a semantic token path to a Figma variable name.
- * e.g.  dhcw.color.interactive.primary        → Interactive/Primary
- *       dhcw.color.status.critical-surface    → Status/Critical Surface
+ * e.g.  sr.color.interactive.primary        → Interactive/Primary
+ *       sr.color.status.critical-surface    → Status/Critical Surface
  */
 function semanticPathToFigmaName(tokenPath) {
-  const parts = tokenPath.replace(/^dhcw\.color\./, '').split('.');
+  const parts = tokenPath.replace(/^sr\.color\./, '').split('.');
   return parts
     .map(p => p.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' '))
     .join('/');
@@ -135,9 +135,9 @@ for (const { path: p } of primitiveEntries) {
 // ─── Build Figma API payload ───────────────────────────────────────────────────
 
 const COLL_PRIM_ID = 'coll__primitives';
-const COLL_SEM_ID  = 'coll__dhcw';
+const COLL_SEM_ID  = 'coll__sr';
 const MODE_PRIM_ID = 'mode__primitives_default';
-const MODE_SEM_ID  = 'mode__dhcw_default';
+const MODE_SEM_ID  = 'mode__sr_default';
 
 const variableCollections = [
   {
@@ -149,7 +149,7 @@ const variableCollections = [
   {
     action: 'CREATE',
     id: COLL_SEM_ID,
-    name: 'DHCW',
+    name: 'Single Record',
     initialModeId: MODE_SEM_ID,
   },
 ];
@@ -248,9 +248,9 @@ async function push() {
   const primitiveCount = primitiveEntries.length;
   const semanticCount  = variables.length - primitiveCount;
 
-  console.log(`\nDHCW Design System — Figma Variable Push`);
+  console.log(`\nSingle Record Design System — Figma Variable Push`);
   console.log(`  File key : ${FIGMA_FILE_KEY}`);
-  console.log(`  Collections: Primitives (${primitiveCount} vars), DHCW (${semanticCount} vars)`);
+  console.log(`  Collections: Primitives (${primitiveCount} vars), Single Record (${semanticCount} vars)`);
   console.log(`  Total variables: ${variables.length}\n`);
 
   const url = `https://api.figma.com/v1/files/${FIGMA_FILE_KEY}/variables`;
