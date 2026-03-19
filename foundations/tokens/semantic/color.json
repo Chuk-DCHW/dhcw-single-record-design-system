@@ -1,0 +1,42 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "DHCW Single Record Design System — Semantic colour tokens (Tier 2). All values reference primitive tokens. Prefix: dhcw (provisional).",
+  "dhcw": {
+    "color": {
+      "interactive": {
+        "primary":       { "$type": "color", "$value": "{color.blue.800}" },
+        "primary-hover": { "$type": "color", "$value": "{color.blue.900}" },
+        "secondary":     { "$type": "color", "$value": "{color.navy.900}" },
+        "link":          { "$type": "color", "$value": "{color.info-blue.default}" },
+        "destructive":   { "$type": "color", "$value": "{color.red.600}" }
+      },
+      "surface": {
+        "default": { "$type": "color", "$value": "{color.grey.100}" },
+        "card":    { "$type": "color", "$value": "{color.white.default}" },
+        "accent":  { "$type": "color", "$value": "{color.cyan.100}" },
+        "subtle":  { "$type": "color", "$value": "{color.blue.50}" },
+        "header":  { "$type": "color", "$value": "{color.navy.900}" }
+      },
+      "text": {
+        "primary":   { "$type": "color", "$value": "{color.grey.900}" },
+        "secondary": { "$type": "color", "$value": "{color.grey.600}" },
+        "inverse":   { "$type": "color", "$value": "{color.white.default}" }
+      },
+      "border": {
+        "default": { "$type": "color", "$value": "{color.grey.200}" },
+        "strong":  { "$type": "color", "$value": "{color.grey.600}" },
+        "focus":   { "$type": "color", "$value": "{color.focus-yellow.default}" }
+      },
+      "status": {
+        "critical":         { "$type": "color", "$value": "{color.red.600}" },
+        "critical-surface": { "$type": "color", "$value": "{color.red.100}" },
+        "success":          { "$type": "color", "$value": "{color.green.600}" },
+        "success-surface":  { "$type": "color", "$value": "{color.green.100}" },
+        "warning":          { "$type": "color", "$value": "{color.yellow.500}" },
+        "warning-surface":  { "$type": "color", "$value": "{color.yellow.100}" },
+        "info":             { "$type": "color", "$value": "{color.info-blue.default}" },
+        "info-surface":     { "$type": "color", "$value": "{color.info-blue.100}" }
+      }
+    }
+  }
+}

@@ -1,66 +1,97 @@
-# Global Colour Tokens
+# Global Colour Tokens (Primitives)
 
-Global tokens define the raw palette. They are **not used directly** in components or patterns — always use semantic tokens.
+Primitive tokens define the raw palette. They are **not used directly** in components or patterns — always use semantic tokens.
 
-These values are defined in Figma as **global colour variables**.
+Machine-readable source of truth: `/foundations/tokens/primitives/color.json` (W3C Design Token format).
+
+These values are defined in Figma as **primitive colour variables**.
 
 ---
 
 ## Palette
 
-### Blue
-| Token | Value | Notes |
-|---|---|---|
-| `color.global.blue.100` | `#EBF3FB` | Lightest — backgrounds only |
-| `color.global.blue.200` | `#C4DCF4` | |
-| `color.global.blue.300` | `#8CBAE8` | |
-| `color.global.blue.400` | `#4A90D4` | |
-| `color.global.blue.500` | `#1565C0` | NHS Blue reference |
-| `color.global.blue.600` | `#0E4F97` | |
-| `color.global.blue.700` | `#09397A` | Darkest |
+### Blue (NHS Wales Blue — primary brand)
 
-### Teal
 | Token | Value | Notes |
 |---|---|---|
-| `color.global.teal.100` | `#E5F6F4` | |
-| `color.global.teal.500` | `#007A74` | DHCW Teal — brand accent |
-| `color.global.teal.700` | `#005651` | |
+| `color.blue.900` | `#1E3050` | Darkest |
+| `color.blue.800` | `#325083` | Brand primary |
+| `color.blue.700` | `#3D6199` | |
+| `color.blue.600` | `#4C72AE` | |
+| `color.blue.500` | `#5C6991` | |
+| `color.blue.400` | `#828DAC` | |
+| `color.blue.300` | `#AAB1C6` | |
+| `color.blue.200` | `#D4D8E2` | |
+| `color.blue.100` | `#ECEEF3` | |
+| `color.blue.50`  | `#F4F5F8` | Lightest — backgrounds only |
 
-### Green (Status)
-| Token | Value | Notes |
-|---|---|---|
-| `color.global.green.100` | `#EBF5EB` | |
-| `color.global.green.500` | `#2E7D32` | |
-| `color.global.green.700` | `#1B5E20` | |
+### Cyan (DHCW Blue — secondary/accent)
 
-### Amber (Status)
 | Token | Value | Notes |
 |---|---|---|
-| `color.global.amber.100` | `#FFF8E1` | |
-| `color.global.amber.500` | `#F59E0B` | |
-| `color.global.amber.700` | `#B45309` | |
+| `color.cyan.900` | `#0A6A84` | Darkest |
+| `color.cyan.800` | `#0D8BAD` | |
+| `color.cyan.700` | `#12A3C9` | Brand secondary |
+| `color.cyan.600` | `#71ACCD` | |
+| `color.cyan.500` | `#8DC0DA` | |
+| `color.cyan.400` | `#AFD4E5` | |
+| `color.cyan.300` | `#D6EAF2` | |
+| `color.cyan.100` | `#EBF5FA` | |
+| `color.cyan.50`  | `#F4FAFC` | Lightest |
 
-### Red (Status / Error)
-| Token | Value | Notes |
-|---|---|---|
-| `color.global.red.100` | `#FDECEC` | |
-| `color.global.red.500` | `#D32F2F` | |
-| `color.global.red.700` | `#B71C1C` | |
+### Navy (DHCW Navy)
 
-### Neutral
 | Token | Value | Notes |
 |---|---|---|
-| `color.global.neutral.0`   | `#FFFFFF` | White |
-| `color.global.neutral.50`  | `#F9FAFB` | |
-| `color.global.neutral.100` | `#F3F4F6` | |
-| `color.global.neutral.200` | `#E5E7EB` | |
-| `color.global.neutral.300` | `#D1D5DB` | |
-| `color.global.neutral.400` | `#9CA3AF` | |
-| `color.global.neutral.500` | `#6B7280` | |
-| `color.global.neutral.600` | `#4B5563` | |
-| `color.global.neutral.700` | `#374151` | |
-| `color.global.neutral.800` | `#1F2937` | |
-| `color.global.neutral.900` | `#111827` | Near-black |
+| `color.navy.900` | `#1B294A` | Darkest |
+| `color.navy.700` | `#464C64` | |
+| `color.navy.500` | `#707488` | |
+| `color.navy.300` | `#9EA1AF` | |
+| `color.navy.100` | `#CDCFD6` | Lightest |
+
+### Red (Status — error/critical)
+
+| Token | Value | Notes |
+|---|---|---|
+| `color.red.600` | `#D5281B` | NHS red |
+| `color.red.100` | `#FCDBD9` | Error surface |
+
+### Green (Status — success)
+
+| Token | Value | Notes |
+|---|---|---|
+| `color.green.600` | `#007F3B` | NHS green |
+| `color.green.100` | `#D9EFE5` | Success surface |
+
+### Yellow (Status — warning)
+
+| Token | Value | Notes |
+|---|---|---|
+| `color.yellow.500` | `#F8CA4D` | Warning |
+| `color.yellow.100` | `#FDF6DC` | Warning surface |
+
+### Info Blue (Status — informational)
+
+| Token | Value | Notes |
+|---|---|---|
+| `color.info-blue`     | `#005AA8` | Informational |
+| `color.info-blue.100` | `#D6E8F5` | Info surface |
+
+### Focus
+
+| Token | Value | Notes |
+|---|---|---|
+| `color.focus-yellow` | `#FFEB3B` | Focus ring — all interactive elements |
+
+### Neutral / UI
+
+| Token | Value | Notes |
+|---|---|---|
+| `color.grey.900` | `#212B32` | Near-black — primary text |
+| `color.grey.600` | `#4C6272` | Secondary text |
+| `color.grey.200` | `#D8DDE0` | Default borders |
+| `color.grey.100` | `#F0F4F5` | Default surface |
+| `color.white`    | `#FFFFFF` | White |
 
 ---
 
@@ -76,6 +107,6 @@ Contrast checks are documented in `/foundations/tokens/colour/semantic.md`.
 
 ## Notes
 
-- Values are provisional. Final palette requires sign-off from design lead.
-- Do not reference `color.global.*` tokens in component files — use semantic tokens.
+- Do not reference `color.*` primitive tokens in component files — use semantic tokens.
 - Palette must support both light mode (current) and dark mode (future consideration).
+- Machine-readable source: `/foundations/tokens/primitives/color.json`.

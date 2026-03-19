@@ -1,0 +1,73 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "DHCW Single Record Design System — Primitive colour tokens (Tier 1). Raw palette values. Never reference these directly in components — use semantic tokens.",
+  "color": {
+    "blue": {
+      "$description": "NHS Wales Blue — primary brand",
+      "900": { "$type": "color", "$value": "#1E3050" },
+      "800": { "$type": "color", "$value": "#325083", "$description": "Brand primary" },
+      "700": { "$type": "color", "$value": "#3D6199" },
+      "600": { "$type": "color", "$value": "#4C72AE" },
+      "500": { "$type": "color", "$value": "#5C6991" },
+      "400": { "$type": "color", "$value": "#828DAC" },
+      "300": { "$type": "color", "$value": "#AAB1C6" },
+      "200": { "$type": "color", "$value": "#D4D8E2" },
+      "100": { "$type": "color", "$value": "#ECEEF3" },
+      "50":  { "$type": "color", "$value": "#F4F5F8" }
+    },
+    "cyan": {
+      "$description": "DHCW Blue — secondary/accent",
+      "900": { "$type": "color", "$value": "#0A6A84" },
+      "800": { "$type": "color", "$value": "#0D8BAD" },
+      "700": { "$type": "color", "$value": "#12A3C9", "$description": "Brand secondary" },
+      "600": { "$type": "color", "$value": "#71ACCD" },
+      "500": { "$type": "color", "$value": "#8DC0DA" },
+      "400": { "$type": "color", "$value": "#AFD4E5" },
+      "300": { "$type": "color", "$value": "#D6EAF2" },
+      "100": { "$type": "color", "$value": "#EBF5FA" },
+      "50":  { "$type": "color", "$value": "#F4FAFC" }
+    },
+    "navy": {
+      "$description": "DHCW Navy",
+      "900": { "$type": "color", "$value": "#1B294A" },
+      "700": { "$type": "color", "$value": "#464C64" },
+      "500": { "$type": "color", "$value": "#707488" },
+      "300": { "$type": "color", "$value": "#9EA1AF" },
+      "100": { "$type": "color", "$value": "#CDCFD6" }
+    },
+    "red": {
+      "$description": "Status — error/critical",
+      "600": { "$type": "color", "$value": "#D5281B" },
+      "100": { "$type": "color", "$value": "#FCDBD9" }
+    },
+    "green": {
+      "$description": "Status — success",
+      "600": { "$type": "color", "$value": "#007F3B" },
+      "100": { "$type": "color", "$value": "#D9EFE5" }
+    },
+    "yellow": {
+      "$description": "Status — warning",
+      "500": { "$type": "color", "$value": "#F8CA4D" },
+      "100": { "$type": "color", "$value": "#FDF6DC" }
+    },
+    "info-blue": {
+      "$description": "Status — informational",
+      "default": { "$type": "color", "$value": "#005AA8" },
+      "100":     { "$type": "color", "$value": "#D6E8F5" }
+    },
+    "focus-yellow": {
+      "$description": "Focus ring colour",
+      "default": { "$type": "color", "$value": "#FFEB3B" }
+    },
+    "grey": {
+      "$description": "Neutral/UI palette",
+      "900": { "$type": "color", "$value": "#212B32" },
+      "600": { "$type": "color", "$value": "#4C6272" },
+      "200": { "$type": "color", "$value": "#D8DDE0" },
+      "100": { "$type": "color", "$value": "#F0F4F5" }
+    },
+    "white": {
+      "default": { "$type": "color", "$value": "#FFFFFF" }
+    }
+  }
+}
