@@ -1,0 +1,7 @@
+{
+  "name": "SR Colour Guide Builder",
+  "id": "sr-colour-guide-builder",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"]
+}

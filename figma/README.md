@@ -11,6 +11,7 @@ This directory manages the relationship between Figma design assets and the desi
 | `variable-mapping.md` | Maps Figma variables to design token names |
 | `handoff-conventions.md` | Rules for preparing designs for engineering handoff |
 | `scripts/push-variables.js` | Pushes colour tokens to Figma via the Variables REST API |
+| `plugins/colour-palette/` | One-run Figma plugin to generate the colour palette page (interim — see below) |
 
 ---
 
@@ -63,7 +64,7 @@ This creates two collections in the Figma file:
 
 The script is CREATE-only. To re-run after changes:
 1. Open the Figma file → **Local variables**
-2. Delete the `Primitives` and `DHCW` collections
+2. Delete the `Primitives` and `Single Record` collections
 3. Re-run the script
 
 ### What it does not do
@@ -71,6 +72,57 @@ The script is CREATE-only. To re-run after changes:
 - Does not push spacing, typography, or elevation tokens (added later when those JSON files exist)
 - Does not create component-level (Tier 3) tokens
 - Does not modify existing variables — only creates new ones
+
+---
+
+## Ways of Working — Figma Tooling
+
+There are three distinct ways this system interacts with Figma. Each has a specific role. Use the right tool for the job.
+
+| Task | Tool | Reason |
+|---|---|---|
+| Push design tokens (variables) | **REST API** via `scripts/push-variables.js` + GitHub Actions | Variables API is the only REST endpoint that supports writes |
+| Read design content (specs, layouts, screenshots) | **Figma MCP** (`get_design_context`, `get_metadata`, `get_screenshot`) | MCP provides structured output optimised for code generation |
+| Write design content to canvas | **Code-to-canvas** via hosted static HTML + Figma import | MCP tools are read-only for design files; REST API has no design-node write endpoint |
+| Generate documentation pages | `generate.js` → `colour-guide.html` → hosted URL → paste into Figma | Self-contained HTML, previewed at htmlpreview.github.io |
+
+### MCP write capability — confirmed findings
+
+After full investigation across all available MCP tools:
+
+- `get_design_context`, `get_metadata`, `get_screenshot`, `get_variable_defs` — **read only**
+- `generate_diagram` — **FigJam only** (Mermaid diagrams, not Figma design files)
+- `send_code_connect_mappings`, `add_code_connect_map` — **Code Connect only**
+- `create_design_system_rules` — generates a rules prompt, does not write to canvas
+
+The Figma REST API has no endpoint for creating design nodes (frames, shapes, text). Write access to the design canvas requires either a Figma plugin running inside the app, or manual Figma UI interaction.
+
+### Current status
+
+| Capability | Approach | Status |
+|---|---|---|
+| Push colour variables | REST API → GitHub Actions | ✅ Live |
+| Read design content | Figma MCP | ✅ Live |
+| Write design content to canvas | Code-to-canvas via hosted HTML | ✅ Live — see below |
+| Colour palette page | `figma/colour-guide/colour-guide.html` | ✅ Generated and hosted |
+
+### Code-to-canvas workflow
+
+Generated documentation pages are hosted on GitHub and can be captured into Figma in one step:
+
+1. The page is live at:
+   ```
+   https://htmlpreview.github.io/?https://raw.githubusercontent.com/Chuk-DCHW/dhcw-single-record-design-system/claude/test-figma-mcp-OC5P4/figma/colour-guide/colour-guide.html
+   ```
+2. Open Figma → navigate to the `🌈 Colours` page
+3. Use **Plugins → Figma** or **Main menu → File → Place image** to import, **or** simply press `K` to open the frame tool, paste the URL, and Figma renders it as an embedded frame
+
+**Re-generating after token changes:**
+```bash
+node figma/colour-guide/generate.js
+# commit colour-guide.html, push — the hosted URL auto-updates
+```
+
 
 ---
 
