@@ -57,7 +57,7 @@ This creates two collections in the Figma file:
 | Collection | Contents | Published |
 |---|---|---|
 | `Primitives` | 38 raw palette variables | Hidden (internal) |
-| `DHCW` | 23 semantic alias variables | Visible in library |
+| `Single Record` | 23 semantic alias variables | Visible in library |
 
 ### Re-running
 

@@ -11,11 +11,11 @@ This file must be kept in sync whenever tokens are added, renamed, or removed.
 | Layer | Format | Example |
 |---|---|---|
 | Figma variable (primitives) | `Primitives/Group/Scale` | `Primitives/Blue/800` |
-| Figma variable (semantic) | `DHCW/Category/Name` | `DHCW/Interactive/Primary` |
+| Figma variable (semantic) | `SR/Category/Name` | `SR/Interactive/Primary` |
 | Design token (primitives) | `color.{hue}.{scale}` | `color.blue.800` |
-| Design token (semantic) | `dhcw.color.{category}.{name}` | `dhcw.color.interactive.primary` |
-| CSS custom property | `--dhcw-color-{category}-{name}` | `--dhcw-color-interactive-primary` |
-| MAUI resource | `DhcwColor{Category}{Name}` | `DhcwColorInteractivePrimary` |
+| Design token (semantic) | `sr.color.{category}.{name}` | `sr.color.interactive.primary` |
+| CSS custom property | `--sr-color-{category}-{name}` | `--sr-color-interactive-primary` |
+| MAUI resource | `SrColor{Category}{Name}` | `SrColorInteractivePrimary` |
 
 ---
 
@@ -88,46 +88,46 @@ All semantic variables alias primitives — no raw hex values.
 ### Interactive
 | Figma Variable | Token | Aliases |
 |---|---|---|
-| `DHCW/Interactive/Primary` | `dhcw.color.interactive.primary` | `color.blue.800` |
-| `DHCW/Interactive/Primary Hover` | `dhcw.color.interactive.primary-hover` | `color.blue.900` |
-| `DHCW/Interactive/Secondary` | `dhcw.color.interactive.secondary` | `color.navy.900` |
-| `DHCW/Interactive/Link` | `dhcw.color.interactive.link` | `color.info-blue` |
-| `DHCW/Interactive/Destructive` | `dhcw.color.interactive.destructive` | `color.red.600` |
+| `SR/Interactive/Primary` | `sr.color.interactive.primary` | `color.blue.800` |
+| `SR/Interactive/Primary Hover` | `sr.color.interactive.primary-hover` | `color.blue.900` |
+| `SR/Interactive/Secondary` | `sr.color.interactive.secondary` | `color.navy.900` |
+| `SR/Interactive/Link` | `sr.color.interactive.link` | `color.info-blue` |
+| `SR/Interactive/Destructive` | `sr.color.interactive.destructive` | `color.red.600` |
 
 ### Surface
 | Figma Variable | Token | Aliases |
 |---|---|---|
-| `DHCW/Surface/Default` | `dhcw.color.surface.default` | `color.grey.100` |
-| `DHCW/Surface/Card` | `dhcw.color.surface.card` | `color.white` |
-| `DHCW/Surface/Accent` | `dhcw.color.surface.accent` | `color.cyan.100` |
-| `DHCW/Surface/Subtle` | `dhcw.color.surface.subtle` | `color.blue.50` |
-| `DHCW/Surface/Header` | `dhcw.color.surface.header` | `color.navy.900` |
+| `SR/Surface/Default` | `sr.color.surface.default` | `color.grey.100` |
+| `SR/Surface/Card` | `sr.color.surface.card` | `color.white` |
+| `SR/Surface/Accent` | `sr.color.surface.accent` | `color.cyan.100` |
+| `SR/Surface/Subtle` | `sr.color.surface.subtle` | `color.blue.50` |
+| `SR/Surface/Header` | `sr.color.surface.header` | `color.navy.900` |
 
 ### Text
 | Figma Variable | Token | Aliases |
 |---|---|---|
-| `DHCW/Text/Primary` | `dhcw.color.text.primary` | `color.grey.900` |
-| `DHCW/Text/Secondary` | `dhcw.color.text.secondary` | `color.grey.600` |
-| `DHCW/Text/Inverse` | `dhcw.color.text.inverse` | `color.white` |
+| `SR/Text/Primary` | `sr.color.text.primary` | `color.grey.900` |
+| `SR/Text/Secondary` | `sr.color.text.secondary` | `color.grey.600` |
+| `SR/Text/Inverse` | `sr.color.text.inverse` | `color.white` |
 
 ### Border
 | Figma Variable | Token | Aliases |
 |---|---|---|
-| `DHCW/Border/Default` | `dhcw.color.border.default` | `color.grey.200` |
-| `DHCW/Border/Strong` | `dhcw.color.border.strong` | `color.grey.600` |
-| `DHCW/Border/Focus` | `dhcw.color.border.focus` | `color.focus-yellow` |
+| `SR/Border/Default` | `sr.color.border.default` | `color.grey.200` |
+| `SR/Border/Strong` | `sr.color.border.strong` | `color.grey.600` |
+| `SR/Border/Focus` | `sr.color.border.focus` | `color.focus-yellow` |
 
 ### Status
 | Figma Variable | Token | Aliases |
 |---|---|---|
-| `DHCW/Status/Critical` | `dhcw.color.status.critical` | `color.red.600` |
-| `DHCW/Status/Critical Surface` | `dhcw.color.status.critical-surface` | `color.red.100` |
-| `DHCW/Status/Success` | `dhcw.color.status.success` | `color.green.600` |
-| `DHCW/Status/Success Surface` | `dhcw.color.status.success-surface` | `color.green.100` |
-| `DHCW/Status/Warning` | `dhcw.color.status.warning` | `color.yellow.500` |
-| `DHCW/Status/Warning Surface` | `dhcw.color.status.warning-surface` | `color.yellow.100` |
-| `DHCW/Status/Info` | `dhcw.color.status.info` | `color.info-blue` |
-| `DHCW/Status/Info Surface` | `dhcw.color.status.info-surface` | `color.info-blue.100` |
+| `SR/Status/Critical` | `sr.color.status.critical` | `color.red.600` |
+| `SR/Status/Critical Surface` | `sr.color.status.critical-surface` | `color.red.100` |
+| `SR/Status/Success` | `sr.color.status.success` | `color.green.600` |
+| `SR/Status/Success Surface` | `sr.color.status.success-surface` | `color.green.100` |
+| `SR/Status/Warning` | `sr.color.status.warning` | `color.yellow.500` |
+| `SR/Status/Warning Surface` | `sr.color.status.warning-surface` | `color.yellow.100` |
+| `SR/Status/Info` | `sr.color.status.info` | `color.info-blue` |
+| `SR/Status/Info Surface` | `sr.color.status.info-surface` | `color.info-blue.100` |
 
 ---
 
