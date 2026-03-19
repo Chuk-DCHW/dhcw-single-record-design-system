@@ -8,7 +8,8 @@ How to work within and contribute to this design system.
 
 1. **Request Figma access** from the design lead — you need at minimum editor access to the design system library.
 2. **Read `CLAUDE.md`** — it defines the rules everyone on this project follows, including designers.
-3. **Familiarise yourself with the foundations** — start with `/foundations/tokens/colour/semantic.md`, `/foundations/tokens/typography.md`, and `/foundations/grid-and-layout.md`.
+3. **Read the UCD principles** — see `/docs/ucd-principles.md`. All design decisions must align with DHCW's 9 user-centred design principles, approved by the TDA.
+4. **Familiarise yourself with the foundations** — start with `/foundations/tokens/colour/semantic.md`, `/foundations/tokens/typography.md`, and `/foundations/grid-and-layout.md`.
 4. **Review the component catalogue** — `/components/README.md`. Know what exists before designing something new.
 
 ---
