@@ -63,7 +63,7 @@ This creates two collections in the Figma file:
 
 The script is CREATE-only. To re-run after changes:
 1. Open the Figma file → **Local variables**
-2. Delete the `Primitives` and `DHCW` collections
+2. Delete the `Primitives` and `Single Record` collections
 3. Re-run the script
 
 ### What it does not do
