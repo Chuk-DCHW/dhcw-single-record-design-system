@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Typography Tokens — Single Record Design System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,22 +36,13 @@
     /* ── Header ── */
     .site-header {
       background: var(--navy-900);
-      padding: 16px var(--page-pad);
+      padding: 20px var(--page-pad);
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
     }
-    .site-mark { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .site-mark-badge {
-      background: var(--cyan-700);
-      color: #fff;
-      font-weight: 700;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-    .site-mark-name { color: rgba(255,255,255,0.85); font-size: 14px; }
+    .site-logo { height: 40px; width: auto; display: block; }
+    .site-header-title { color: rgba(255,255,255,0.85); font-size: 20px; font-weight: 700; letter-spacing: 0.007em; }
 
     /* ── Hero ── */
     .hero {
@@ -69,7 +60,7 @@
       margin-bottom: 12px;
     }
     .hero-title {
-      font-weight: 700;
+      font-weight: 900;
       font-size: 56px;
       line-height: 1.05;
       color: var(--grey-900);
@@ -80,9 +71,18 @@
       font-size: 16px;
       color: var(--grey-600);
       font-weight: 400;
-      max-width: 560px;
+      max-width: 757px;
       line-height: 1.6;
       margin-bottom: 32px;
+    }
+    .hero-rationale {
+      font-size: 16px;
+      color: var(--grey-900);
+      font-weight: 400;
+      max-width: 890px;
+      line-height: 1.6;
+      margin-top: 24px;
+      letter-spacing: -0.05em;
     }
     .token-nav {
       display: flex;
@@ -452,10 +452,9 @@
 <body>
 
   <header class="site-header">
-    <div class="site-mark">
-      <span class="site-mark-badge">SR</span>
-      <span class="site-mark-name">Single Record Design System</span>
-    </div>
+    <!-- Replace src with path to DHCW logo asset -->
+    <img class="site-logo" src="dhcw-logo-white.png" alt="DHCW — Digital Health and Care Wales">
+    <span class="site-header-title">Single Record Design System</span>
   </header>
 
   <div class="hero">
@@ -480,6 +479,7 @@
       <a href="#change-history">Change history</a>
       <a href="#references">References</a>
     </nav>
+    <p class="hero-rationale">Frutiger cannot be used on the Single Record Products due to licensing restrictions. Therefore we will be using Roboto across all services of the app.</p>
   </div>
 
   <main class="main">
