@@ -128,7 +128,7 @@ function toFigmaValue(resolvedType, value) {
 function figmaScopes(resolvedType, semanticHint) {
   if (resolvedType === 'COLOR')  return ['ALL_SCOPES'];
   if (resolvedType === 'STRING') {
-    if (semanticHint === 'fontFamily') return ['FONT_FAMILIES'];
+    if (semanticHint === 'fontFamily') return ['FONT_FAMILY'];
     return ['ALL_SCOPES'];
   }
   if (resolvedType === 'FLOAT') {
