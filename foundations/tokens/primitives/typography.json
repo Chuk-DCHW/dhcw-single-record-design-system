@@ -1,0 +1,60 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "DHCW Single Record Design System — Primitive typography tokens (Tier 1). Raw scale values only. Never reference these directly in components — use semantic tokens.",
+
+  "font": {
+
+    "family": {
+      "$description": "Typeface definitions",
+      "primary":  { "$type": "fontFamily", "$value": "Roboto",              "$description": "Primary UI typeface" },
+      "fallback": { "$type": "fontFamily", "$value": ["Arial", "sans-serif"], "$description": "System fallback stack" }
+    },
+
+    "weight": {
+      "$description": "Numeric font weight values",
+      "regular": { "$type": "fontWeight", "$value": 400 },
+      "medium":  { "$type": "fontWeight", "$value": 500 },
+      "bold":    { "$type": "fontWeight", "$value": 700 }
+    },
+
+    "size": {
+      "$description": "Font size scale (px). Reference via semantic tokens only.",
+      "12": { "$type": "dimension", "$value": "12px" },
+      "14": { "$type": "dimension", "$value": "14px" },
+      "16": { "$type": "dimension", "$value": "16px" },
+      "19": { "$type": "dimension", "$value": "19px" },
+      "22": { "$type": "dimension", "$value": "22px" },
+      "26": { "$type": "dimension", "$value": "26px" },
+      "27": { "$type": "dimension", "$value": "27px" },
+      "32": { "$type": "dimension", "$value": "32px" },
+      "36": { "$type": "dimension", "$value": "36px" },
+      "48": { "$type": "dimension", "$value": "48px" },
+      "64": { "$type": "dimension", "$value": "64px" }
+    },
+
+    "line-height": {
+      "$description": "Line height scale (px). Paired with font sizes via semantic tokens.",
+      "16": { "$type": "dimension", "$value": "16px" },
+      "20": { "$type": "dimension", "$value": "20px" },
+      "24": { "$type": "dimension", "$value": "24px" },
+      "27": { "$type": "dimension", "$value": "27px" },
+      "28": { "$type": "dimension", "$value": "28px" },
+      "29": { "$type": "dimension", "$value": "29px" },
+      "30": { "$type": "dimension", "$value": "30px" },
+      "32": { "$type": "dimension", "$value": "32px" },
+      "33": { "$type": "dimension", "$value": "33px" },
+      "38": { "$type": "dimension", "$value": "38px" },
+      "42": { "$type": "dimension", "$value": "42px" },
+      "54": { "$type": "dimension", "$value": "54px" },
+      "72": { "$type": "dimension", "$value": "72px" }
+    },
+
+    "letter-spacing": {
+      "$description": "Letter spacing values for use in semantic typography tokens",
+      "default": { "$type": "dimension", "$value": "0",      "$description": "No additional letter spacing — used for body and headings" },
+      "wide":    { "$type": "dimension", "$value": "0.05em", "$description": "Slightly expanded — used for labels and UI controls" },
+      "caption": { "$type": "dimension", "$value": "0.02em", "$description": "Gentle expansion — used for captions and supporting text" }
+    }
+
+  }
+}
