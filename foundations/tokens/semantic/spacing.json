@@ -1,0 +1,35 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "DHCW Single Record Design System — Semantic spacing tokens (Tier 2). All values reference primitive tokens via {path} syntax. Use these in all component and layout specifications.",
+
+  "spacing": {
+
+    "component": {
+      "$description": "Internal component padding and gaps",
+      "xs": { "$type": "dimension", "$value": "{space.1}", "$description": "Icon-only buttons, tight badges" },
+      "sm": { "$type": "dimension", "$value": "{space.2}", "$description": "Compact inputs, table cells" },
+      "md": { "$type": "dimension", "$value": "{space.4}", "$description": "Default padding for most components" },
+      "lg": { "$type": "dimension", "$value": "{space.6}", "$description": "Panels, cards" },
+      "xl": { "$type": "dimension", "$value": "{space.8}", "$description": "Large containers" }
+    },
+
+    "form": {
+      "$description": "Spacing within and between form elements",
+      "field-gap":  { "$type": "dimension", "$value": "{space.6}", "$description": "Vertical gap between form fields" },
+      "label-gap":  { "$type": "dimension", "$value": "{space.2}", "$description": "Gap between label and input" },
+      "hint-gap":   { "$type": "dimension", "$value": "{space.1}", "$description": "Gap between hint text and input" },
+      "error-gap":  { "$type": "dimension", "$value": "{space.1}", "$description": "Gap between error message and input" },
+      "group-gap":  { "$type": "dimension", "$value": "{space.8}", "$description": "Gap between field groups / fieldsets" }
+    },
+
+    "layout": {
+      "$description": "Page-level layout spacing",
+      "xs":      { "$type": "dimension", "$value": "{space.4}",  "$description": "Column gutters (mobile)" },
+      "sm":      { "$type": "dimension", "$value": "{space.6}",  "$description": "Column gutters (tablet)" },
+      "md":      { "$type": "dimension", "$value": "{space.8}",  "$description": "Column gutters (desktop)" },
+      "section": { "$type": "dimension", "$value": "{space.12}", "$description": "Between page sections" },
+      "page":    { "$type": "dimension", "$value": "{space.16}", "$description": "Page padding / top-level margins" }
+    }
+
+  }
+}

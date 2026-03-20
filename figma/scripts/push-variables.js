@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 /**
- * push-variables.js
+ * push-variables.js  v2
  *
  * Pushes DHCW design tokens to Figma as Variables via the REST API.
  *
- * Creates two collections in the target Figma file:
- *   "Primitives"    — raw values (colour palette + typography scale + breakpoints)
+ * v2 changes:
+ *   - Upsert support: fetches existing variables first, UPDATEs matching
+ *     ones, CREATEs new ones. Safe to re-run without deleting collections.
+ *   - Spacing tokens added: primitives (space.*) + semantic (spacing.*)
+ *
+ * Creates / maintains two collections in the target Figma file:
+ *   "Primitives"    — raw values (colour, typography, spacing, breakpoints)
  *                     Hidden from publishing.
- *   "Single Record" — semantic aliases referencing Primitives (colour + typography)
+ *   "Single Record" — semantic aliases referencing Primitives
  *                     Published to the library.
  *
  * Prerequisites:
@@ -23,14 +28,12 @@
  *                   https://figma.com/design/<FILE_KEY>/...
  *
  * Notes:
- *   - This script is additive (CREATE only). Delete the "Primitives" and
- *     "Single Record" collections in Figma before re-running after changes.
- *   - Composite typography tokens (sr.typography.*) are flattened into
- *     individual property variables (Font Size, Line Height, etc.) because
- *     the Figma Variables API has no composite typography type. Use Figma
- *     Text Styles for fully-composed type styles.
- *   - em-based letter-spacing values are pushed as STRING variables since
- *     the Figma FLOAT/LETTER_SPACING scope requires pixel values.
+ *   - Composite typography tokens are flattened into individual property
+ *     variables (the Figma Variables API has no composite typography type).
+ *     Use Figma Text Styles for fully-composed type styles.
+ *   - em-based letter-spacing values are pushed as STRING variables.
+ *   - Spacing and breakpoint variables use GAP + WIDTH_HEIGHT scopes so
+ *     they appear in auto-layout and sizing pickers only, not font pickers.
  */
 
 'use strict';
@@ -45,7 +48,7 @@ const FIGMA_FILE_KEY = process.env.FIGMA_FILE_KEY;
 
 if (!FIGMA_TOKEN || !FIGMA_FILE_KEY) {
   console.error('Error: required environment variables are not set.\n');
-  console.error('  FIGMA_TOKEN     — Personal access token with Variables scope');
+  console.error('  FIGMA_TOKEN     — Personal access token with Variables Read + Write scope');
   console.error('  FIGMA_FILE_KEY  — Key from the Figma file URL\n');
   console.error('Example:');
   console.error('  FIGMA_TOKEN=figd_xxx FIGMA_FILE_KEY=AbCdEf node figma/scripts/push-variables.js');
@@ -55,20 +58,19 @@ if (!FIGMA_TOKEN || !FIGMA_FILE_KEY) {
 // ─── Load token files ──────────────────────────────────────────────────────────
 
 const ROOT = path.resolve(__dirname, '../..');
+const load = rel => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
 
-function loadTokens(relPath) {
-  return JSON.parse(fs.readFileSync(path.join(ROOT, relPath), 'utf8'));
-}
+const colourPrimTokens  = load('foundations/tokens/primitives/color.json');
+const colourSemTokens   = load('foundations/tokens/semantic/color.json');
+const typoPrimTokens    = load('foundations/tokens/primitives/typography.json');
+const typoSemTokens     = load('foundations/tokens/semantic/typography.json');
+const spacingPrimTokens = load('foundations/tokens/primitives/spacing.json');
+const spacingSemTokens  = load('foundations/tokens/semantic/spacing.json');
+const breakpointTokens  = load('foundations/tokens/breakpoints.json');
 
-const colourPrimTokens = loadTokens('foundations/tokens/primitives/color.json');
-const colourSemTokens  = loadTokens('foundations/tokens/semantic/color.json');
-const typoPrimTokens   = loadTokens('foundations/tokens/primitives/typography.json');
-const typoSemTokens    = loadTokens('foundations/tokens/semantic/typography.json');
-const breakpointTokens = loadTokens('foundations/tokens/breakpoints.json');
+// ─── Value helpers ─────────────────────────────────────────────────────────────
 
-// ─── Core helpers ──────────────────────────────────────────────────────────────
-
-/** Convert a 6-digit hex colour to Figma's { r, g, b, a } (0–1 range). */
+/** Convert a 6-digit hex to Figma's { r, g, b, a } (0–1 range). */
 function hexToRgba(hex) {
   const h = hex.replace('#', '');
   if (h.length !== 6) throw new Error(`Unexpected hex value: ${hex}`);
@@ -80,390 +82,437 @@ function hexToRgba(hex) {
   };
 }
 
-/**
- * Determine the Figma resolvedType from a W3C DTCG $type and its value.
- *   fontFamily               → STRING
- *   fontWeight               → FLOAT
- *   dimension (em-based)     → STRING  (em values are context-relative; can't store as FLOAT px)
- *   dimension (px / numeric) → FLOAT
- */
+/** Determine Figma resolvedType from a W3C DTCG $type and its value. */
 function figmaResolvedType(dtcgType, value) {
   if (dtcgType === 'fontFamily') return 'STRING';
   if (dtcgType === 'fontWeight') return 'FLOAT';
   if (dtcgType === 'dimension') {
-    if (typeof value === 'string' && value.includes('em')) return 'STRING';
-    return 'FLOAT';
+    return (typeof value === 'string' && value.includes('em')) ? 'STRING' : 'FLOAT';
   }
   if (dtcgType === 'color') return 'COLOR';
   return 'STRING';
 }
 
-/**
- * Convert a W3C token value to the raw value Figma expects for a given resolvedType.
- *   FLOAT  — strip trailing unit suffix ("px", etc.); "0" → 0
- *   STRING — join arrays with ", "; leave strings as-is
- *   COLOR  — call hexToRgba
- */
+/** Convert a W3C token value to the raw value Figma expects. */
 function toFigmaValue(resolvedType, value) {
   if (resolvedType === 'FLOAT') {
-    if (value === '0') return 0;
+    if (value === '0' || value === '0px') return 0;
     const n = parseFloat(value);
     if (isNaN(n)) throw new Error(`Cannot convert "${value}" to FLOAT`);
     return n;
   }
-  if (resolvedType === 'STRING') {
-    if (Array.isArray(value)) return value.join(', ');
-    return String(value);
-  }
-  if (resolvedType === 'COLOR') {
-    return hexToRgba(value);
-  }
+  if (resolvedType === 'STRING') return Array.isArray(value) ? value.join(', ') : String(value);
+  if (resolvedType === 'COLOR')  return hexToRgba(value);
   return value;
 }
 
 /**
- * Variable scopes tell Figma where a variable can be applied in the UI.
- * Scopes vary by resolvedType and semantic meaning.
+ * Variable scopes tell Figma where a variable can be applied.
+ * Spacing/breakpoints use GAP + WIDTH_HEIGHT to avoid cluttering font pickers.
  */
-function figmaScopes(resolvedType, semanticHint) {
+function figmaScopes(resolvedType, hint) {
   if (resolvedType === 'COLOR')  return ['ALL_SCOPES'];
-  if (resolvedType === 'STRING') {
-    if (semanticHint === 'fontFamily') return ['FONT_FAMILIES'];
-    return ['ALL_SCOPES'];
-  }
+  if (resolvedType === 'STRING') return hint === 'fontFamily' ? ['FONT_FAMILY'] : ['ALL_SCOPES'];
   if (resolvedType === 'FLOAT') {
-    if (semanticHint === 'fontSize')      return ['FONT_SIZE'];
-    if (semanticHint === 'lineHeight')    return ['LINE_HEIGHT'];
-    if (semanticHint === 'letterSpacing') return ['LETTER_SPACING'];
-    if (semanticHint === 'breakpoint')    return ['WIDTH_HEIGHT'];
+    if (hint === 'fontSize')      return ['FONT_SIZE'];
+    if (hint === 'lineHeight')    return ['LINE_HEIGHT'];
+    if (hint === 'letterSpacing') return ['LETTER_SPACING'];
+    if (hint === 'spacing')       return ['GAP', 'WIDTH_HEIGHT'];
+    if (hint === 'breakpoint')    return ['WIDTH_HEIGHT'];
     return ['ALL_SCOPES'];
   }
   return ['ALL_SCOPES'];
 }
 
-/** Generate a stable temp ID from a token path for use within a single API payload. */
+// ─── ID helpers ────────────────────────────────────────────────────────────────
+
+/** Generate a stable temp ID for use within a single API payload. */
 function tempId(ns, tokenPath) {
   return `${ns}__${tokenPath.replace(/[^a-z0-9]/gi, '_')}`;
 }
 
 // ─── Token flatteners ──────────────────────────────────────────────────────────
 
-/**
- * Flatten a nested W3C Design Token object into leaf entries.
- * Skips $-prefixed metadata keys.
- * Returns: Array<{ path, value, dtcgType }>
- */
+/** Flatten a nested W3C Design Token object into leaf entries. */
 function flattenTokens(obj, prefix = '') {
-  const results = [];
+  const out = [];
   for (const [key, val] of Object.entries(obj)) {
     if (key.startsWith('$')) continue;
-    const tokenPath = prefix ? `${prefix}.${key}` : key;
+    const tp = prefix ? `${prefix}.${key}` : key;
     if (val && typeof val === 'object' && '$value' in val) {
-      results.push({ path: tokenPath, value: val.$value, dtcgType: val.$type || null });
+      out.push({ path: tp, value: val.$value, dtcgType: val.$type || null });
     } else if (val && typeof val === 'object') {
-      results.push(...flattenTokens(val, tokenPath));
+      out.push(...flattenTokens(val, tp));
     }
   }
-  return results;
+  return out;
 }
 
 /**
- * Flatten composite typography tokens (sr.typography.*) into individual
- * per-property entries. Skips non-composite tokens.
- * Returns: Array<{ compositePath, propKey, ref }>
- *   ref is a W3C alias string e.g. "{font.size.48}"
+ * Flatten composite typography tokens into individual per-property entries.
+ * Returns Array<{ compositePath, propKey, ref }> where ref is a W3C alias.
  */
 function flattenTypographyComposites(obj, prefix = '') {
-  const results = [];
+  const out = [];
   for (const [key, val] of Object.entries(obj)) {
     if (key.startsWith('$')) continue;
-    const tokenPath = prefix ? `${prefix}.${key}` : key;
-    if (val && typeof val === 'object' && val.$type === 'typography' && typeof val.$value === 'object') {
+    const tp = prefix ? `${prefix}.${key}` : key;
+    if (val?.$type === 'typography' && typeof val.$value === 'object') {
       for (const [propKey, ref] of Object.entries(val.$value)) {
-        results.push({ compositePath: tokenPath, propKey, ref });
+        out.push({ compositePath: tp, propKey, ref });
       }
     } else if (val && typeof val === 'object') {
-      results.push(...flattenTypographyComposites(val, tokenPath));
+      out.push(...flattenTypographyComposites(val, tp));
     }
   }
-  return results;
+  return out;
 }
 
 // ─── Naming conventions ────────────────────────────────────────────────────────
 
-/** Capitalise each word and join with a space. */
+// Size abbreviations that should be fully uppercased in Figma names
+const ABBR = new Set(['xs', 'sm', 'md', 'lg', 'xl']);
+
 function titleCase(str) {
-  return str.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return str.split('-').map(w =>
+    ABBR.has(w.toLowerCase()) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)
+  ).join(' ');
 }
 
-/**
- * Colour primitive path → Figma variable name (unchanged from v1).
- * color.blue.900          → Blue/900
- * color.info-blue.default → Info Blue
- * color.white.default     → White
- */
-function colourPrimToFigmaName(tokenPath) {
-  const parts = tokenPath.replace(/^color\./, '').split('.');
-  return parts
-    .filter(p => p !== 'default')
-    .map(titleCase)
-    .join('/');
+// color.blue.900          → Blue/900
+// color.info-blue.default → Info Blue
+// color.white.default     → White
+function colourPrimToFigmaName(p) {
+  return p.replace(/^color\./, '').split('.').filter(s => s !== 'default').map(titleCase).join('/');
 }
 
-/**
- * Colour semantic path → Figma variable name (unchanged from v1).
- * sr.color.interactive.primary     → Interactive/Primary
- * sr.color.status.critical-surface → Status/Critical Surface
- */
-function colourSemToFigmaName(tokenPath) {
-  const parts = tokenPath.replace(/^sr\.color\./, '').split('.');
-  return parts.map(titleCase).join('/');
+// sr.color.interactive.primary     → Interactive/Primary
+// sr.color.status.critical-surface → Status/Critical Surface
+function colourSemToFigmaName(p) {
+  return p.replace(/^sr\.color\./, '').split('.').map(titleCase).join('/');
 }
 
-/**
- * Typography / breakpoint primitive path → Figma variable name.
- * font.family.primary         → Font/Family/Primary
- * font.weight.bold            → Font/Weight/Bold
- * font.size.48                → Font/Size/48
- * font.line-height.54         → Font/Line Height/54
- * font.letter-spacing.default → Font/Letter Spacing/Default
- * breakpoint.desktop.min      → Breakpoint/Desktop/Min
- */
-function genericPrimToFigmaName(tokenPath) {
-  const parts = tokenPath.split('.');
-  return parts.map(p => titleCase(p)).join('/');
+// font.size.48           → Font/Size/48
+// breakpoint.desktop.min → Breakpoint/Desktop/Min
+function genericPrimToFigmaName(p) {
+  return p.split('.').map(titleCase).join('/');
 }
 
-/**
- * Typography semantic composite property → Figma variable name.
- * sr.typography.heading-xl.desktop, fontSize → Typography/Heading XL/Desktop/Font Size
- * sr.typography.body.mobile, lineHeight      → Typography/Body/Mobile/Line Height
- */
+// sr.typography.heading-xl.desktop, fontSize → Typography/Heading XL/Desktop/Font Size
 function typoSemToFigmaName(compositePath, propKey) {
-  const propLabels = {
+  const labels = {
     fontFamily:    'Font Family',
     fontSize:      'Font Size',
     lineHeight:    'Line Height',
     fontWeight:    'Font Weight',
     letterSpacing: 'Letter Spacing',
   };
-  const inner = compositePath.replace(/^sr\.typography\./, '');
-  const parts  = inner.split('.').map(titleCase);
-  const prop   = propLabels[propKey] || titleCase(propKey);
-  return `Typography/${parts.join('/')}/${prop}`;
+  const parts = compositePath.replace(/^sr\.typography\./, '').split('.').map(titleCase);
+  return `Typography/${parts.join('/')}/${labels[propKey] || titleCase(propKey)}`;
+}
+
+// space.4  → Space/4
+function spacingPrimToFigmaName(p) {
+  return p.split('.').map(titleCase).join('/');
+}
+
+// spacing.component.xs        → Spacing/Component/XS
+// spacing.form.field-gap      → Spacing/Form/Field Gap
+// spacing.layout.section      → Spacing/Layout/Section
+function spacingSemToFigmaName(p) {
+  return p.split('.').map(titleCase).join('/');
 }
 
 // ─── Flatten all token sources ─────────────────────────────────────────────────
 
-const colourPrimEntries = flattenTokens(colourPrimTokens);
-const colourSemEntries  = flattenTokens(colourSemTokens);
-const typoPrimEntries   = flattenTokens(typoPrimTokens);
-const bpEntries         = flattenTokens(breakpointTokens);
-const typoSemEntries    = flattenTypographyComposites(typoSemTokens);
+const colourPrimEntries  = flattenTokens(colourPrimTokens);
+const colourSemEntries   = flattenTokens(colourSemTokens);
+const typoPrimEntries    = flattenTokens(typoPrimTokens);
+const typoSemEntries     = flattenTypographyComposites(typoSemTokens);
+const spacingPrimEntries = flattenTokens(spacingPrimTokens);
+const spacingSemEntries  = flattenTokens(spacingSemTokens);
+const bpEntries          = flattenTokens(breakpointTokens);
 
-// ─── Primitive lookup maps ─────────────────────────────────────────────────────
+// ─── Fetch existing Figma variables ────────────────────────────────────────────
 
-// Unified map: primitive token path → { tempId, resolvedType }
-// Used when resolving alias references in semantic tokens.
-const primLookup = {};
+/**
+ * GET the file's existing local variables.
+ * Returns:
+ *   collections: { [name]: { id, modes: { [modeName]: modeId } } }
+ *   variables:   { [`${collectionId}/${figmaName}`]: variableId }
+ */
+async function fetchExisting() {
+  const res = await fetch(
+    `https://api.figma.com/v1/files/${FIGMA_FILE_KEY}/variables/local`,
+    { headers: { 'X-Figma-Token': FIGMA_TOKEN } }
+  );
 
-for (const { path: p, value, dtcgType } of colourPrimEntries) {
-  primLookup[p] = { id: tempId('prim', p), resolvedType: 'COLOR' };
-}
-for (const { path: p, value, dtcgType } of typoPrimEntries) {
-  const rType = figmaResolvedType(dtcgType, value);
-  primLookup[p] = { id: tempId('prim', p), resolvedType: rType };
-}
-for (const { path: p, value, dtcgType } of bpEntries) {
-  primLookup[p] = { id: tempId('prim', p), resolvedType: 'FLOAT' };
-}
-
-// ─── Collections & modes ───────────────────────────────────────────────────────
-
-const COLL_PRIM_ID   = 'coll__primitives';
-const COLL_SEM_ID    = 'coll__sr';
-const MODE_PRIM_ID   = 'mode__prim_default';
-const MODE_SEM_ID    = 'mode__sr_default';
-
-const variableCollections = [
-  { action: 'CREATE', id: COLL_PRIM_ID, name: 'Primitives',    initialModeId: MODE_PRIM_ID },
-  { action: 'CREATE', id: COLL_SEM_ID,  name: 'Single Record', initialModeId: MODE_SEM_ID  },
-];
-
-const variableModes = [
-  { action: 'UPDATE', id: MODE_PRIM_ID, name: 'Default', variableCollectionId: COLL_PRIM_ID },
-  { action: 'UPDATE', id: MODE_SEM_ID,  name: 'Default', variableCollectionId: COLL_SEM_ID  },
-];
-
-const variables          = [];
-const variableModeValues = [];
-const warnings           = [];
-
-// ─── Primitives: colour ────────────────────────────────────────────────────────
-
-for (const { path: tokenPath, value } of colourPrimEntries) {
-  const { id } = primLookup[tokenPath];
-  variables.push({
-    action: 'CREATE',
-    id,
-    name: colourPrimToFigmaName(tokenPath),
-    variableCollectionId: COLL_PRIM_ID,
-    resolvedType: 'COLOR',
-    hiddenFromPublishing: true,
-    scopes: ['ALL_SCOPES'],
-  });
-  variableModeValues.push({ variableId: id, modeId: MODE_PRIM_ID, value: hexToRgba(value) });
-}
-
-// ─── Primitives: typography scale ─────────────────────────────────────────────
-
-for (const { path: tokenPath, value, dtcgType } of typoPrimEntries) {
-  const { id, resolvedType } = primLookup[tokenPath];
-
-  // Semantic hint for scopes
-  let hint = 'other';
-  if (tokenPath.includes('size'))           hint = 'fontSize';
-  else if (tokenPath.includes('line-height')) hint = 'lineHeight';
-  else if (tokenPath.includes('letter-spacing') && resolvedType === 'FLOAT') hint = 'letterSpacing';
-  else if (tokenPath.includes('family'))    hint = 'fontFamily';
-
-  variables.push({
-    action: 'CREATE',
-    id,
-    name: genericPrimToFigmaName(tokenPath),
-    variableCollectionId: COLL_PRIM_ID,
-    resolvedType,
-    hiddenFromPublishing: true,
-    scopes: figmaScopes(resolvedType, hint),
-  });
-  variableModeValues.push({
-    variableId: id,
-    modeId: MODE_PRIM_ID,
-    value: toFigmaValue(resolvedType, value),
-  });
-}
-
-// ─── Primitives: breakpoints ───────────────────────────────────────────────────
-
-for (const { path: tokenPath, value } of bpEntries) {
-  const { id } = primLookup[tokenPath];
-  variables.push({
-    action: 'CREATE',
-    id,
-    name: genericPrimToFigmaName(tokenPath),
-    variableCollectionId: COLL_PRIM_ID,
-    resolvedType: 'FLOAT',
-    hiddenFromPublishing: true,
-    scopes: figmaScopes('FLOAT', 'breakpoint'),
-  });
-  variableModeValues.push({
-    variableId: id,
-    modeId: MODE_PRIM_ID,
-    value: toFigmaValue('FLOAT', value),
-  });
-}
-
-// ─── Single Record: colour semantics ──────────────────────────────────────────
-
-for (const { path: tokenPath, value: aliasRef } of colourSemEntries) {
-  const match = aliasRef.match(/^\{(.+)\}$/);
-  if (!match) {
-    warnings.push(`Colour semantic "${tokenPath}": "${aliasRef}" is not an alias — skipped.`);
-    continue;
-  }
-  const prim = primLookup[match[1]];
-  if (!prim) {
-    warnings.push(`Colour semantic "${tokenPath}": no primitive found for "${match[1]}" — skipped.`);
-    continue;
+  if (!res.ok) {
+    const j = await res.json().catch(() => ({}));
+    console.warn(`  ⚠  Could not fetch existing variables (HTTP ${res.status}${j.message ? ': ' + j.message : ''}) — all will be CREATEd.`);
+    return { collections: {}, variables: {} };
   }
 
-  const id = tempId('sem', tokenPath);
-  variables.push({
-    action: 'CREATE',
-    id,
-    name: colourSemToFigmaName(tokenPath),
-    variableCollectionId: COLL_SEM_ID,
-    resolvedType: 'COLOR',
-    hiddenFromPublishing: false,
-    scopes: ['ALL_SCOPES'],
-  });
-  variableModeValues.push({
-    variableId: id,
-    modeId: MODE_SEM_ID,
-    value: { type: 'VARIABLE_ALIAS', id: prim.id },
-  });
-}
+  const json        = await res.json();
+  const collections = {};
+  const variables   = {};
 
-// ─── Single Record: typography semantics ──────────────────────────────────────
-//
-// Composite typography tokens are flattened into one variable per property.
-// Each variable aliases the corresponding primitive variable.
-// resolvedType is inherited from the referenced primitive.
-
-for (const { compositePath, propKey, ref } of typoSemEntries) {
-  const match = ref.match(/^\{(.+)\}$/);
-  if (!match) {
-    warnings.push(`Typography semantic "${compositePath}.${propKey}": "${ref}" is not an alias — skipped.`);
-    continue;
-  }
-  const primPath = match[1];
-  const prim     = primLookup[primPath];
-  if (!prim) {
-    warnings.push(`Typography semantic "${compositePath}.${propKey}": no primitive for "${primPath}" — skipped.`);
-    continue;
+  for (const coll of Object.values(json.meta?.variableCollections ?? {})) {
+    const modes = {};
+    for (const m of coll.modes ?? []) modes[m.name] = m.modeId;
+    collections[coll.name] = { id: coll.id, modes };
   }
 
-  const id = tempId('sem', `${compositePath}.${propKey}`);
-  variables.push({
-    action: 'CREATE',
-    id,
-    name: typoSemToFigmaName(compositePath, propKey),
-    variableCollectionId: COLL_SEM_ID,
-    resolvedType: prim.resolvedType,
-    hiddenFromPublishing: false,
-    scopes: figmaScopes(prim.resolvedType, propKey),
-  });
-  variableModeValues.push({
-    variableId: id,
-    modeId: MODE_SEM_ID,
-    value: { type: 'VARIABLE_ALIAS', id: prim.id },
-  });
+  for (const v of Object.values(json.meta?.variables ?? {})) {
+    if (!v.remote) variables[`${v.variableCollectionId}/${v.name}`] = v.id;
+  }
+
+  const collCount = Object.keys(collections).length;
+  const varCount  = Object.keys(variables).length;
+  if (collCount) {
+    console.log(`  Found ${varCount} existing variable(s) across ${collCount} collection(s)`);
+    console.log(`  → Matching variables will be UPDATEd; new variables will be CREATEd.\n`);
+  } else {
+    console.log(`  No existing SR collections found — all variables will be CREATEd.\n`);
+  }
+
+  return { collections, variables };
 }
 
-// ─── Warnings ─────────────────────────────────────────────────────────────────
-
-if (warnings.length) {
-  console.warn('\nWarnings:');
-  warnings.forEach(w => console.warn(' ⚠', w));
-}
-
-// ─── Push to Figma API ─────────────────────────────────────────────────────────
-
-const payload = { variableCollections, variableModes, variables, variableModeValues };
+// ─── Main ──────────────────────────────────────────────────────────────────────
 
 async function push() {
-  const counts = {
-    colourPrim:  colourPrimEntries.length,
-    typoPrim:    typoPrimEntries.length,
-    breakpoints: bpEntries.length,
-    colourSem:   colourSemEntries.length,
-    typoSem:     typoSemEntries.length,
-  };
-  const totalPrim = counts.colourPrim + counts.typoPrim + counts.breakpoints;
-  const totalSem  = counts.colourSem  + counts.typoSem;
+  console.log('\nSingle Record Design System — Figma Variable Push  v2');
+  console.log('─'.repeat(54));
+  console.log(`  File key : ${FIGMA_FILE_KEY}\n`);
 
-  console.log('\nSingle Record Design System — Figma Variable Push');
-  console.log(`  File key : ${FIGMA_FILE_KEY}`);
-  console.log(`\n  Primitives collection (${totalPrim} variables):`);
-  console.log(`    Colour      ${counts.colourPrim}`);
-  console.log(`    Typography  ${counts.typoPrim}`);
-  console.log(`    Breakpoints ${counts.breakpoints}`);
-  console.log(`\n  Single Record collection (${totalSem} semantic variables):`);
-  console.log(`    Colour      ${counts.colourSem}`);
-  console.log(`    Typography  ${counts.typoSem} (${counts.typoSem / 5 | 0} tokens × 5 properties)`);
-  console.log(`\n  Total variables: ${variables.length}\n`);
+  const existing = await fetchExisting();
 
-  const url = `https://api.figma.com/v1/files/${FIGMA_FILE_KEY}/variables`;
+  // ── Resolve collection and mode IDs ──────────────────────────────────────────
+  // Use real Figma IDs for existing collections/modes; temp IDs for new ones.
+
+  const existingPrimColl = existing.collections['Primitives'];
+  const existingSemColl  = existing.collections['Single Record'];
+
+  const COLL_PRIM_ID = existingPrimColl?.id                   ?? 'coll__primitives';
+  const COLL_SEM_ID  = existingSemColl?.id                    ?? 'coll__sr';
+  const MODE_PRIM_ID = existingPrimColl?.modes?.['Default']   ?? 'mode__prim_default';
+  const MODE_SEM_ID  = existingSemColl?.modes?.['Default']    ?? 'mode__sr_default';
+
+  // ── Helper: resolve variable ID ───────────────────────────────────────────────
+  // If a variable with this name exists in this collection, return its real ID.
+  // Otherwise return a stable temp ID for use within this payload.
+
+  function resolveVarId(collId, figmaName, ns, tokenPath) {
+    const existId = existing.variables[`${collId}/${figmaName}`];
+    return { id: existId ?? tempId(ns, tokenPath), isExisting: !!existId };
+  }
+
+  // ── Build primitive lookup ────────────────────────────────────────────────────
+  // Maps token path → { id, resolvedType } for use when resolving semantic aliases.
+
+  const primLookup = {};
+
+  function registerPrim(collId, figmaName, ns, tokenPath, resolvedType) {
+    const { id } = resolveVarId(collId, figmaName, ns, tokenPath);
+    primLookup[tokenPath] = { id, resolvedType };
+  }
+
+  for (const { path: p } of colourPrimEntries)
+    registerPrim(COLL_PRIM_ID, colourPrimToFigmaName(p), 'prim', p, 'COLOR');
+
+  for (const { path: p, value, dtcgType } of typoPrimEntries)
+    registerPrim(COLL_PRIM_ID, genericPrimToFigmaName(p), 'prim', p, figmaResolvedType(dtcgType, value));
+
+  for (const { path: p } of spacingPrimEntries)
+    registerPrim(COLL_PRIM_ID, spacingPrimToFigmaName(p), 'prim_sp', p, 'FLOAT');
+
+  for (const { path: p } of bpEntries)
+    registerPrim(COLL_PRIM_ID, genericPrimToFigmaName(p), 'prim', p, 'FLOAT');
+
+  // ── Collections ──────────────────────────────────────────────────────────────
+
+  const variableCollections = [
+    {
+      action:               existingPrimColl ? 'UPDATE' : 'CREATE',
+      id:                   COLL_PRIM_ID,
+      name:                 'Primitives',
+      hiddenFromPublishing: true,
+      ...(existingPrimColl ? {} : { initialModeId: MODE_PRIM_ID }),
+    },
+    {
+      action:               existingSemColl ? 'UPDATE' : 'CREATE',
+      id:                   COLL_SEM_ID,
+      name:                 'Single Record',
+      hiddenFromPublishing: false,
+      ...(existingSemColl ? {} : { initialModeId: MODE_SEM_ID }),
+    },
+  ];
+
+  const variableModes = [
+    { action: 'UPDATE', id: MODE_PRIM_ID, name: 'Default', variableCollectionId: COLL_PRIM_ID },
+    { action: 'UPDATE', id: MODE_SEM_ID,  name: 'Default', variableCollectionId: COLL_SEM_ID  },
+  ];
+
+  // ── Variable builder ─────────────────────────────────────────────────────────
+
+  const variables          = [];
+  const variableModeValues = [];
+  const warnings           = [];
+
+  function addVar({ collId, modeId, figmaName, ns, tokenPath, resolvedType, figmaValue, hidden, scopes }) {
+    const { id, isExisting } = resolveVarId(collId, figmaName, ns, tokenPath);
+
+    const entry = {
+      action:               isExisting ? 'UPDATE' : 'CREATE',
+      id,
+      name:                 figmaName,
+      hiddenFromPublishing: hidden,
+      scopes,
+    };
+    // resolvedType and variableCollectionId are immutable — only set on CREATE
+    if (!isExisting) {
+      entry.variableCollectionId = collId;
+      entry.resolvedType         = resolvedType;
+    }
+
+    variables.push(entry);
+    variableModeValues.push({ variableId: id, modeId, value: figmaValue });
+  }
+
+  // ── Primitives: colour ───────────────────────────────────────────────────────
+
+  for (const { path: p, value } of colourPrimEntries) {
+    addVar({
+      collId: COLL_PRIM_ID, modeId: MODE_PRIM_ID,
+      figmaName: colourPrimToFigmaName(p), ns: 'prim', tokenPath: p,
+      resolvedType: 'COLOR', figmaValue: hexToRgba(value),
+      hidden: true, scopes: ['ALL_SCOPES'],
+    });
+  }
+
+  // ── Primitives: typography ───────────────────────────────────────────────────
+
+  for (const { path: p, value, dtcgType } of typoPrimEntries) {
+    const resolvedType = figmaResolvedType(dtcgType, value);
+    let hint = 'other';
+    if (p.includes('size'))           hint = 'fontSize';
+    else if (p.includes('line-height')) hint = 'lineHeight';
+    else if (p.includes('letter-spacing') && resolvedType === 'FLOAT') hint = 'letterSpacing';
+    else if (p.includes('family'))    hint = 'fontFamily';
+
+    addVar({
+      collId: COLL_PRIM_ID, modeId: MODE_PRIM_ID,
+      figmaName: genericPrimToFigmaName(p), ns: 'prim', tokenPath: p,
+      resolvedType, figmaValue: toFigmaValue(resolvedType, value),
+      hidden: true, scopes: figmaScopes(resolvedType, hint),
+    });
+  }
+
+  // ── Primitives: spacing ──────────────────────────────────────────────────────
+
+  for (const { path: p, value } of spacingPrimEntries) {
+    addVar({
+      collId: COLL_PRIM_ID, modeId: MODE_PRIM_ID,
+      figmaName: spacingPrimToFigmaName(p), ns: 'prim_sp', tokenPath: p,
+      resolvedType: 'FLOAT', figmaValue: toFigmaValue('FLOAT', value),
+      hidden: true, scopes: figmaScopes('FLOAT', 'spacing'),
+    });
+  }
+
+  // ── Primitives: breakpoints ──────────────────────────────────────────────────
+
+  for (const { path: p, value } of bpEntries) {
+    addVar({
+      collId: COLL_PRIM_ID, modeId: MODE_PRIM_ID,
+      figmaName: genericPrimToFigmaName(p), ns: 'prim', tokenPath: p,
+      resolvedType: 'FLOAT', figmaValue: toFigmaValue('FLOAT', value),
+      hidden: true, scopes: figmaScopes('FLOAT', 'breakpoint'),
+    });
+  }
+
+  // ── Semantic: colour ─────────────────────────────────────────────────────────
+
+  for (const { path: p, value: aliasRef } of colourSemEntries) {
+    const match = aliasRef.match(/^\{(.+)\}$/);
+    if (!match) { warnings.push(`Colour sem "${p}": "${aliasRef}" is not an alias — skipped.`); continue; }
+    const prim = primLookup[match[1]];
+    if (!prim)  { warnings.push(`Colour sem "${p}": no primitive found for "${match[1]}" — skipped.`); continue; }
+
+    addVar({
+      collId: COLL_SEM_ID, modeId: MODE_SEM_ID,
+      figmaName: colourSemToFigmaName(p), ns: 'sem', tokenPath: p,
+      resolvedType: 'COLOR', figmaValue: { type: 'VARIABLE_ALIAS', id: prim.id },
+      hidden: false, scopes: ['ALL_SCOPES'],
+    });
+  }
+
+  // ── Semantic: typography (composite flattened) ───────────────────────────────
+
+  for (const { compositePath, propKey, ref } of typoSemEntries) {
+    const match = ref.match(/^\{(.+)\}$/);
+    if (!match) { warnings.push(`Typo sem "${compositePath}.${propKey}": "${ref}" not an alias — skipped.`); continue; }
+    const prim = primLookup[match[1]];
+    if (!prim)  { warnings.push(`Typo sem "${compositePath}.${propKey}": no primitive for "${match[1]}" — skipped.`); continue; }
+
+    addVar({
+      collId: COLL_SEM_ID, modeId: MODE_SEM_ID,
+      figmaName: typoSemToFigmaName(compositePath, propKey), ns: 'sem', tokenPath: `${compositePath}.${propKey}`,
+      resolvedType: prim.resolvedType, figmaValue: { type: 'VARIABLE_ALIAS', id: prim.id },
+      hidden: false, scopes: figmaScopes(prim.resolvedType, propKey),
+    });
+  }
+
+  // ── Semantic: spacing ────────────────────────────────────────────────────────
+
+  for (const { path: p, value: aliasRef } of spacingSemEntries) {
+    const match = aliasRef.match(/^\{(.+)\}$/);
+    if (!match) { warnings.push(`Spacing sem "${p}": "${aliasRef}" is not an alias — skipped.`); continue; }
+    const prim = primLookup[match[1]];
+    if (!prim)  { warnings.push(`Spacing sem "${p}": no primitive found for "${match[1]}" — skipped.`); continue; }
+
+    addVar({
+      collId: COLL_SEM_ID, modeId: MODE_SEM_ID,
+      figmaName: spacingSemToFigmaName(p), ns: 'sem_sp', tokenPath: p,
+      resolvedType: 'FLOAT', figmaValue: { type: 'VARIABLE_ALIAS', id: prim.id },
+      hidden: false, scopes: figmaScopes('FLOAT', 'spacing'),
+    });
+  }
+
+  // ── Warnings ─────────────────────────────────────────────────────────────────
+
+  if (warnings.length) {
+    console.warn('Warnings:');
+    warnings.forEach(w => console.warn('  ⚠ ', w));
+    console.warn('');
+  }
+
+  // ── Summary ──────────────────────────────────────────────────────────────────
+
+  const creates = variables.filter(v => v.action === 'CREATE').length;
+  const updates = variables.filter(v => v.action === 'UPDATE').length;
+
+  console.log('  Primitives collection:');
+  console.log(`    Colour        ${colourPrimEntries.length}`);
+  console.log(`    Typography    ${typoPrimEntries.length}`);
+  console.log(`    Spacing       ${spacingPrimEntries.length}`);
+  console.log(`    Breakpoints   ${bpEntries.length}`);
+  console.log(`    Subtotal      ${colourPrimEntries.length + typoPrimEntries.length + spacingPrimEntries.length + bpEntries.length}`);
+  console.log('');
+  console.log('  Single Record collection:');
+  console.log(`    Colour        ${colourSemEntries.length}`);
+  console.log(`    Typography    ${typoSemEntries.length}`);
+  console.log(`    Spacing       ${spacingSemEntries.length}`);
+  console.log(`    Subtotal      ${colourSemEntries.length + typoSemEntries.length + spacingSemEntries.length}`);
+  console.log('');
+  console.log(`  Action breakdown: ${creates} CREATE  ${updates} UPDATE`);
+  console.log(`  Mode values to set: ${variableModeValues.length}`);
+  console.log('');
+
+  // ── POST to Figma API ─────────────────────────────────────────────────────────
+
+  const payload = { variableCollections, variableModes, variables, variableModeValues };
+  const url     = `https://api.figma.com/v1/files/${FIGMA_FILE_KEY}/variables`;
 
   const res = await fetch(url, {
     method:  'POST',
@@ -479,15 +528,16 @@ async function push() {
     process.exit(1);
   }
 
-  const created = json.meta?.variables ? Object.keys(json.meta.variables).length : 'unknown';
-  console.log(`Done. ${created} variables created in Figma.`);
-  console.log(`\nOpen your Figma file → Local variables to verify.`);
-  console.log(`\nVariable groups created:`);
-  console.log(`  Primitives  →  Blue/, Cyan/, Navy/, Status/, Grey/, White/, Red/, Green/, Yellow/, Info Blue/, Focus Yellow/`);
-  console.log(`                 Font/Family/, Font/Weight/, Font/Size/, Font/Line Height/, Font/Letter Spacing/`);
-  console.log(`                 Breakpoint/`);
-  console.log(`  Single Record → Interactive/, Surface/, Text/, Border/, Status/`);
-  console.log(`                  Typography/Heading XL/, Typography/Heading L/, ... Typography/Caption/`);
+  console.log('✓ Done. Open Figma → Local variables to verify.');
+  console.log('');
+  console.log('  Primitives (hidden)');
+  console.log('    Blue/   Cyan/   Navy/   Red/   Green/   Yellow/');
+  console.log('    Grey/   White/   Focus Yellow/   Info Blue/');
+  console.log('    Font/   Space/   Breakpoint/');
+  console.log('');
+  console.log('  Single Record (published)');
+  console.log('    Interactive/   Surface/   Text/   Border/   Status/');
+  console.log('    Typography/   Spacing/');
 }
 
 push().catch(err => {
