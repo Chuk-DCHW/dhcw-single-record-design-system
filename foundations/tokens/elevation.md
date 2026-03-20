@@ -1,30 +1,51 @@
 # Elevation Tokens
 
-Elevation communicates hierarchy and focus through shadow. Used sparingly — clinical interfaces prioritise clarity over visual depth.
+Elevation communicates layer hierarchy through shadow. SR uses a minimal, functional set — three tokens, each with a named job. Shadow colour derives from `navy-900` (#1B294A) rather than pure black, keeping it on-brand and subdued on clinical displays.
 
 ---
 
-## Scale
+## Philosophy
 
-| Token | CSS Box Shadow | Usage |
+Neither GDS nor NHS England define an elevation system. Both use shadow in exactly one place: a directional bottom-shadow on the primary button as a press affordance — not a depth metaphor.
+
+SR extends this deliberately and sparingly:
+
+- Borders and `sr.color.surface.*` tokens handle structural hierarchy on flat surfaces.
+- Shadow is reserved for elements that genuinely float above the page (overlays, drawers, dropdowns) and for the standard NHS button affordance.
+- Do not use shadow decoratively. If in doubt, use a border instead.
+
+---
+
+## Tokens
+
+| Token | CSS `box-shadow` | Used for |
 |---|---|---|
-| `elevation.0` | `none` | Flat surfaces, default state |
-| `elevation.1` | `0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)` | Cards, list items on subtle backgrounds |
-| `elevation.2` | `0 4px 6px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06)` | Dropdowns, tooltips, floating labels |
-| `elevation.3` | `0 10px 15px rgba(0,0,0,0.10), 0 4px 6px rgba(0,0,0,0.05)` | Modals, drawers |
-| `elevation.4` | `0 20px 25px rgba(0,0,0,0.10), 0 10px 10px rgba(0,0,0,0.04)` | System-critical alerts, toasts (reserved) |
+| `sr.elevation.button` | `0 4px 0 #1B294A` | Primary button press affordance |
+| `sr.elevation.raised` | `0 1px 4px rgba(27,41,74,0.12)` | Cards, panels — gentle lift from page |
+| `sr.elevation.overlay` | `0 4px 16px rgba(27,41,74,0.18)` | Modals, drawers, dropdowns, tooltips |
+
+No `elevation.0` token is needed — the absence of shadow is expressed by not applying any shadow, or by `box-shadow: none` explicitly in a reset context.
 
 ---
 
 ## Usage Rules
 
-- Use elevation to separate layers, not to decorate.
-- Do not use `elevation.3` or `elevation.4` outside of modal/overlay contexts.
-- Do not rely on shadow alone to indicate interactivity — pair with border or background change.
-- On light-mode surfaces (`neutral.0` on `neutral.50`), prefer `elevation.1` over no border to maintain sufficient contrast.
+- Use `sr.elevation.raised` only when a border alone is insufficient to separate a surface — for example, a card on a similarly-coloured background.
+- Use `sr.elevation.overlay` for all floating layers: modals, side drawers, dropdown menus, and tooltips.
+- Do not stack multiple elevations. An element should use one token or none.
+- Do not rely on shadow alone to indicate interactivity — pair with a border or background colour change.
+- Focus rings are not managed through elevation. See `sr.color.border.focus` and `/accessibility/focus-management.md`.
 
 ---
 
-## Focus Elevation
+## What is not in scope
 
-Focus rings are not managed through elevation. See `/foundations/tokens/colour/semantic.md` (`color.interactive.focus`) and `/accessibility/focus-management.md`.
+A numeric elevation scale (`elevation.1` through `elevation.4`) has been intentionally removed. A decorative scale creates pressure to apply shadows for visual interest rather than function. The three functional tokens cover all current SR use cases. If a new use case arises, add a token with a named role via DDR.
+
+---
+
+## Change History
+
+| Date | Change | Changed by |
+|---|---|---|
+| Mar 2026 | Replaced generic numeric scale with three-token functional system. Shadow colour shifted from pure black to navy-900 for brand alignment. | SR DS |
