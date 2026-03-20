@@ -1,0 +1,23 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "DHCW Single Record Design System — Responsive breakpoints. Used to select between mobile and desktop semantic token variants. Not part of the W3C DTCG composite type system — breakpoints are expressed as dimension tokens and consumed by platform-specific implementations.",
+
+  "breakpoint": {
+
+    "mobile": {
+      "$description": "Mobile viewport — applies up to and including this width",
+      "max": { "$type": "dimension", "$value": "767px", "$description": "Maximum width for mobile styles. Use: @media (max-width: 767px)" }
+    },
+
+    "tablet": {
+      "$description": "Tablet viewport — between mobile.max and desktop.min",
+      "min": { "$type": "dimension", "$value": "768px", "$description": "Minimum width for tablet styles. Use: @media (min-width: 768px)" }
+    },
+
+    "desktop": {
+      "$description": "Desktop viewport — full experience with desktop semantic token variants",
+      "min": { "$type": "dimension", "$value": "1024px", "$description": "Minimum width for desktop styles and desktop typography tokens. Use: @media (min-width: 1024px)" }
+    }
+
+  }
+}

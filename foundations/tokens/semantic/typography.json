@@ -1,0 +1,233 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "$description": "DHCW Single Record Design System — Semantic typography tokens (Tier 2). All values reference primitive tokens via {path} syntax. Prefix: sr (Single Record). Desktop and mobile variants are separated; apply via breakpoints defined in tokens/breakpoints.json.",
+
+  "sr": {
+    "typography": {
+
+      "heading-xl": {
+        "$description": "Extra-large heading. Page-level titles and hero text.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "heading-xl at desktop (≥1024px): 48/54 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.48}",
+            "lineHeight":    "{font.line-height.54}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "heading-xl at mobile (<768px): 32/38 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.32}",
+            "lineHeight":    "{font.line-height.38}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        }
+      },
+
+      "heading-l": {
+        "$description": "Large heading. Section titles and major content groupings.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "heading-l at desktop (≥1024px): 36/42 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.36}",
+            "lineHeight":    "{font.line-height.42}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "heading-l at mobile (<768px): 27/33 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.27}",
+            "lineHeight":    "{font.line-height.33}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        }
+      },
+
+      "heading-m": {
+        "$description": "Medium heading. Sub-section titles, card headings, panel headers.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "heading-m at desktop (≥1024px): 26/32 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.26}",
+            "lineHeight":    "{font.line-height.32}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "heading-m at mobile (<768px): 22/29 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.22}",
+            "lineHeight":    "{font.line-height.29}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        }
+      },
+
+      "heading-s": {
+        "$description": "Small heading. List group labels, sidebar headings, modal titles.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "heading-s at desktop (≥1024px): 22/30 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.22}",
+            "lineHeight":    "{font.line-height.30}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "heading-s at mobile (<768px): 19/27 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.19}",
+            "lineHeight":    "{font.line-height.27}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        }
+      },
+
+      "heading-xs": {
+        "$description": "Extra-small heading. Inline section labels, tight UI contexts.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "heading-xs at desktop (≥1024px): 19/28 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.19}",
+            "lineHeight":    "{font.line-height.28}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "heading-xs at mobile (<768px): 16/24 bold",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.16}",
+            "lineHeight":    "{font.line-height.24}",
+            "fontWeight":    "{font.weight.bold}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        }
+      },
+
+      "body": {
+        "$description": "Default body text. Prose, descriptions, clinical notes.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "body at desktop (≥1024px): 19/28 regular",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.19}",
+            "lineHeight":    "{font.line-height.28}",
+            "fontWeight":    "{font.weight.regular}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "body at mobile (<768px): 16/24 regular",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.16}",
+            "lineHeight":    "{font.line-height.24}",
+            "fontWeight":    "{font.weight.regular}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        }
+      },
+
+      "body-s": {
+        "$description": "Small body text. Supporting prose, secondary content, help text.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "body-s at desktop (≥1024px): 16/24 regular. No separate mobile variant — same as mobile body.",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.16}",
+            "lineHeight":    "{font.line-height.24}",
+            "fontWeight":    "{font.weight.regular}",
+            "letterSpacing": "{font.letter-spacing.default}"
+          }
+        }
+      },
+
+      "label": {
+        "$description": "UI labels. Form field labels, navigation items, button text, data table column headers.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "label at desktop (≥1024px): 14/20 medium, wide tracking",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.14}",
+            "lineHeight":    "{font.line-height.20}",
+            "fontWeight":    "{font.weight.medium}",
+            "letterSpacing": "{font.letter-spacing.wide}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "label at mobile (<768px): 14/20 medium, wide tracking",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.14}",
+            "lineHeight":    "{font.line-height.20}",
+            "fontWeight":    "{font.weight.medium}",
+            "letterSpacing": "{font.letter-spacing.wide}"
+          }
+        }
+      },
+
+      "caption": {
+        "$description": "Caption text. Timestamps, metadata, image captions, status annotations.",
+        "desktop": {
+          "$type": "typography",
+          "$description": "caption at desktop (≥1024px): 12/16 regular, caption tracking",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.12}",
+            "lineHeight":    "{font.line-height.16}",
+            "fontWeight":    "{font.weight.regular}",
+            "letterSpacing": "{font.letter-spacing.caption}"
+          }
+        },
+        "mobile": {
+          "$type": "typography",
+          "$description": "caption at mobile (<768px): 12/16 regular, caption tracking",
+          "$value": {
+            "fontFamily":    "{font.family.primary}",
+            "fontSize":      "{font.size.12}",
+            "lineHeight":    "{font.line-height.16}",
+            "fontWeight":    "{font.weight.regular}",
+            "letterSpacing": "{font.letter-spacing.caption}"
+          }
+        }
+      }
+
+    }
+  }
+}
