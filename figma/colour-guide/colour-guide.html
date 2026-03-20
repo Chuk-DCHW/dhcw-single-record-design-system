@@ -34,33 +34,13 @@
     /* ── Header ── */
     .site-header {
       background: var(--navy-900);
-      padding: 16px var(--page-pad);
+      padding: 20px var(--page-pad);
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
     }
-    .site-mark {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-    .site-mark-badge {
-      background: #12A3C9;
-      color: #fff;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 700;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-    .site-mark-name {
-      color: rgba(255,255,255,0.85);
-      font-size: 14px;
-      font-weight: 400;
-      letter-spacing: 0.01em;
-    }
+    .site-logo { height: 40px; width: auto; display: block; }
+    .site-header-title { color: rgba(255,255,255,0.85); font-size: 20px; font-weight: 700; letter-spacing: 0.007em; }
 
     /* ── Hero ── */
     .hero {
@@ -89,7 +69,7 @@
     .hero-subtitle {
       font-size: 16px;
       color: var(--grey-600);
-      font-weight: 300;
+      font-weight: 400;
       max-width: 560px;
       line-height: 1.6;
       margin-bottom: 32px;
@@ -169,7 +149,6 @@
       font-size: 14px;
       color: var(--grey-600);
       margin-bottom: 0;
-      font-weight: 300;
     }
     .tier-rule {
       height: 1px;
@@ -327,6 +306,58 @@
       max-width: 320px;
     }
 
+    /* ── Change history ── */
+    .change-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .change-table thead th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--grey-600);
+      border-bottom: 2px solid var(--grey-200);
+      padding: 8px 12px;
+    }
+    .change-table thead th:first-child { padding-left: 0; }
+    .change-table tbody tr { border-bottom: 1px solid var(--grey-200); }
+    .change-table tbody tr:last-child { border-bottom: none; }
+    .change-table tbody td { padding: 14px 12px; font-size: 13px; vertical-align: top; }
+    .change-table tbody td:first-child { padding-left: 0; white-space: nowrap; color: var(--grey-600); }
+    .change-table .by { font-size: 12px; color: var(--grey-600); }
+
+    /* ── References ── */
+    .ref-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .ref-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .ref-list a {
+      color: var(--blue-800);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .ref-list a:hover { text-decoration: underline; }
+    .ref-list li::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--blue-800);
+      flex-shrink: 0;
+    }
+
     /* ── Footer ── */
     .site-footer {
       border-top: 1px solid var(--grey-200);
@@ -346,10 +377,8 @@
 <body>
 
   <header class="site-header">
-    <div class="site-mark">
-      <span class="site-mark-badge">SR</span>
-      <span class="site-mark-name">Single Record Design System</span>
-    </div>
+    <img class="site-logo" src="../assets/dhcw-logo-white.png" alt="DHCW — Digital Health and Care Wales">
+    <span class="site-header-title">Single Record Design System</span>
   </header>
 
   <div class="hero">
@@ -365,6 +394,9 @@
       <div class="nav-divider"></div>
       <span class="nav-tier-label">Tier 2</span>
       <a href="#sr-interactive">Interactive</a><a href="#sr-surface">Surface</a><a href="#sr-text">Text</a><a href="#sr-border">Border</a><a href="#sr-status">Status</a>
+      <div class="nav-divider"></div>
+      <a href="#change-history">Change history</a>
+      <a href="#references">References</a>
     </nav>
   </div>
 
@@ -1103,6 +1135,58 @@
     </tr>
         </tbody>
       </table>
+    </section>
+
+    <!-- ── Change history ── -->
+    <div class="tier-heading" id="change-history">
+      <p class="tier-label">History</p>
+      <h2 class="tier-title">Change History</h2>
+    </div>
+    <hr class="tier-rule">
+
+    <section class="colour-group">
+      <table class="change-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Change</th>
+            <th>Changed by</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mar 2026</td>
+            <td>Aligned to typography guide format — DHCW logo header, change history and references added</td>
+            <td class="by">SR DS</td>
+          </tr>
+          <tr>
+            <td>2024</td>
+            <td>Status colour palette established — critical, success, warning, info with surface variants. Focus ring added (WCAG 2.2 SC 1.4.11).</td>
+            <td class="by">SR DS</td>
+          </tr>
+          <tr>
+            <td>2024</td>
+            <td>Three-tier colour token architecture introduced — primitives, semantic, component. NHS Wales Blue (blue-800) confirmed as primary brand colour.</td>
+            <td class="by">SR DS</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── References ── -->
+    <div class="tier-heading" id="references">
+      <p class="tier-label">References</p>
+      <h2 class="tier-title">References</h2>
+    </div>
+    <hr class="tier-rule">
+
+    <section class="colour-group">
+      <ul class="ref-list">
+        <li><a href="https://service-manual.nhs.uk/design-system/styles/colour" target="_blank" rel="noopener">NHS England Design System — Colour</a></li>
+        <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum" target="_blank" rel="noopener">WCAG 2.2 SC 1.4.3 — Contrast (Minimum)</a></li>
+        <li><a href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast" target="_blank" rel="noopener">WCAG 2.2 SC 1.4.11 — Non-text Contrast</a></li>
+        <li><a href="https://www.w3.org/community/design-tokens/" target="_blank" rel="noopener">W3C Design Token Community Group</a></li>
+      </ul>
     </section>
 
   </main>
